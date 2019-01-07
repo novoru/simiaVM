@@ -5,7 +5,7 @@ use simiaVM::lexier::{ Lexier };
 
 #[test]
 fn test_next_token() {
-    let input = "=+-*/!<>;,(){}[]".to_string();
+    let input = "=+-*/!<>;,(){}[]100 200 foo bar".to_string();
     let mut lexier = Lexier::new(input);
 
     let tests = [ Token::Assign("=".to_string()),
@@ -24,6 +24,12 @@ fn test_next_token() {
                   Token::Rbrace("}".to_string()),
                   Token::Lbracket("[".to_string()),
                   Token::Rbracket("]".to_string()),
+
+                  Token::Integer("100".to_string()),
+                  Token::Integer("200".to_string()),
+
+                  Token::Identifier("foo".to_string()),
+                  Token::Identifier("bar".to_string()),
     ];
 
     for test in tests.iter() {
