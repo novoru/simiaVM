@@ -41,10 +41,12 @@ impl Lexier {
             '}' => token = Token::Rbrace(self.ch.to_string()),
             '[' => token = Token::Lbracket(self.ch.to_string()),
             ']' => token = Token::Rbracket(self.ch.to_string()),
-            '0' ... '9' => token = Token::Integer(self.read_integer()),
+            '0' ... '9' => return Token::Integer(self.read_integer()),
             'a' ... 'z' |
             'A' ... 'Z' |
-            '_' => token = Token::Identifier(self.read_identifier()),
+            '_'  => return  Token::Identifier(self.read_identifier()),
+            '"'  => token = Token::String(self.read_string()),
+            '\0' => return  Token::Eof(self.ch.to_string()),
             _ => token = Token::Illegal(self.ch.to_string()),
         }
         
@@ -88,6 +90,20 @@ impl Lexier {
             self.read_char();
         }
 
+        self.input[start..self.position].to_string()
+    }
+
+    fn read_string(&mut self) -> String {
+        let start = self.position + 1;
+        self.read_char();
+        
+        loop {
+            if self.ch == '"' || self.ch == '\0' {
+                break;
+            }
+            self.read_char();
+        }
+                
         self.input[start..self.position].to_string()
     }
 }

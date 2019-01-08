@@ -6,6 +6,7 @@ pub enum Token {
     
     Identifier(String),
     Integer(String),
+    String(String),
 
     // Operator
     Assign(String),       // '='
@@ -46,6 +47,7 @@ impl Token {
             Token::Eof(_)        => "Eof".to_string(),
             Token::Identifier(_) => "Identifier".to_string(),
             Token::Integer(_)    => "Integer".to_string(),
+            Token::String(_)     => "String".to_string(),
             Token::Assign(_)     => "Assign".to_string(),
             Token::Plus(_)       => "Plus".to_string(),
             Token::Minus(_)      => "Minus".to_string(),
@@ -73,31 +75,32 @@ impl Token {
 
     pub fn literal(&self) -> String {
         match self {
-            Token::Illegal(literal)    => literal.to_string(),
-            Token::Eof(literal)        => literal.to_string(),
-            Token::Identifier(literal) => literal.to_string(),
-            Token::Integer(literal)    => literal.to_string(),
-            Token::Assign(literal)     => literal.to_string(),
-            Token::Plus(literal)       => literal.to_string(),
-            Token::Minus(literal)      => literal.to_string(),
-            Token::Asterisk(literal)   => literal.to_string(),
-            Token::Slash(literal)      => literal.to_string(),
-            Token::Bang(literal)       => literal.to_string(),
-            Token::Eq(literal)         => literal.to_string(),
-            Token::NotEq(literal)      => literal.to_string(),
-            Token::Lt(literal)         => literal.to_string(),
-            Token::Gt(literal)         => literal.to_string(),
-            Token::Let(literal)        => literal.to_string(),
-            Token::Function(literal)   => literal.to_string(),
-            Token::If(literal)         => literal.to_string(),
-            Token::Else(literal)       => literal.to_string(),
-            Token::Semicolon(literal)  => literal.to_string(),
-            Token::Comma(literal)      => literal.to_string(),
-            Token::Lparen(literal)     => literal.to_string(),
-            Token::Rparen(literal)     => literal.to_string(),
-            Token::Lbrace(literal)     => literal.to_string(),
-            Token::Rbrace(literal)     => literal.to_string(),
-            Token::Lbracket(literal)   => literal.to_string(),
+            Token::Illegal(literal)    |
+            Token::Eof(literal)        |
+            Token::Identifier(literal) |
+            Token::Integer(literal)    |
+            Token::String(literal)     |
+            Token::Assign(literal)     |
+            Token::Plus(literal)       |
+            Token::Minus(literal)      |
+            Token::Asterisk(literal)   |
+            Token::Slash(literal)      |
+            Token::Bang(literal)       |
+            Token::Eq(literal)         |
+            Token::NotEq(literal)      |
+            Token::Lt(literal)         |
+            Token::Gt(literal)         |
+            Token::Let(literal)        |
+            Token::Function(literal)   |
+            Token::If(literal)         |
+            Token::Else(literal)       |
+            Token::Semicolon(literal)  |
+            Token::Comma(literal)      |
+            Token::Lparen(literal)     |
+            Token::Rparen(literal)     |
+            Token::Lbrace(literal)     |
+            Token::Rbrace(literal)     |
+            Token::Lbracket(literal)   |
             Token::Rbracket(literal)   => literal.to_string(),
         }
     }
