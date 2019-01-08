@@ -44,7 +44,32 @@ impl Lexier {
             '0' ... '9' => return Token::Integer(self.read_integer()),
             'a' ... 'z' |
             'A' ... 'Z' |
-            '_'  => return  Token::Identifier(self.read_identifier()),
+            '_'  => {
+                let ident = self.read_identifier();
+                if ident == "let" {
+                    return Token::Let(ident);
+                }
+                else if ident == "fn" {
+                    return Token::Function(ident);
+                }
+                else if ident == "if" {
+                    return Token::If(ident);
+                }
+                else if ident == "else" {
+                    return Token::Else(ident);
+                }
+                else if ident == "return" {
+                    return Token::Return(ident);
+                }
+                else if ident == "true" {
+                    return Token::True(ident);
+                }
+                else if ident == "false" {
+                    return Token::False(ident);
+                }
+
+                return Token::Identifier(ident)
+            },
             '"'  => token = Token::String(self.read_string()),
             '\0' => return  Token::Eof(self.ch.to_string()),
             _ => token = Token::Illegal(self.ch.to_string()),

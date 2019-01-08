@@ -5,11 +5,20 @@ use simiaVM::lexier::{ Lexier };
 
 #[test]
 fn test_next_token() {
-    let input = "\
-=+-*/!<>;,(){}[] \
-100 200;\
-foo bar;\
-\"foo\" \"bar\" \"\";\
+    let input = "     \
+=+-*/!<>;,(){}[]      \
+100 200;              \
+foo bar;              \
+\"foo\" \"bar\" \"\"; \
+true false;           \
+return ;              \
+if (true) {           \
+    return a;         \
+}                     \
+fn(a) {               \
+    return a + b;     \
+}                     \
+[1, 2, a];            \
 ".to_string();
     let mut lexier = Lexier::new(input);
 
@@ -43,6 +52,49 @@ foo bar;\
                   Token::String("".to_string()),
                   Token::Semicolon(";".to_string()),
 
+                  Token::True("true".to_string()),
+                  Token::False("false".to_string()),
+                  Token::Semicolon(";".to_string()),
+
+                  Token::Return("return".to_string()),
+                  Token::Semicolon(";".to_string()),
+
+                  Token::If("if".to_string()),
+                  Token::Lparen("(".to_string()),
+                  Token::True("true".to_string()),
+                  Token::Rparen(")".to_string()),
+                  Token::Lbrace("{".to_string()),
+                  
+                  Token::Return("return".to_string()),
+                  Token::Identifier("a".to_string()),
+                  Token::Semicolon(";".to_string()),
+
+                  Token::Rbrace("}".to_string()),
+                  
+
+                  Token::Function("fn".to_string()),
+                  Token::Lparen("(".to_string()),
+                  Token::Identifier("a".to_string()),
+                  Token::Rparen(")".to_string()),
+                  Token::Lbrace("{".to_string()),
+                  
+                  Token::Return("return".to_string()),
+                  Token::Identifier("a".to_string()),
+                  Token::Plus("+".to_string()),
+                  Token::Identifier("b".to_string()),
+                  Token::Semicolon(";".to_string()),
+
+                  Token::Rbrace("}".to_string()),
+
+                  Token::Lbracket("[".to_string()),
+                  Token::Integer("1".to_string()),
+                  Token::Comma(",".to_string()),
+                  Token::Integer("2".to_string()),
+                  Token::Comma(",".to_string()),
+                  Token::Identifier("a".to_string()),
+                  Token::Rbracket("]".to_string()),
+                  Token::Semicolon(";".to_string()),
+                  
                   Token::Eof("\0".to_string()),
     ];
 

@@ -26,7 +26,10 @@ pub enum Token {
     Function(String),     // 'fn'
     If(String),           // 'if'
     Else(String),         // 'else'
-
+    Return(String),       // 'return'
+    True(String),         // 'true'
+    False(String),        // 'false'
+    
     // Delimeter
     Semicolon(String),    // ';'
     Comma(String),        // ','
@@ -62,6 +65,10 @@ impl Token {
             Token::Function(_)   => "Function".to_string(),
             Token::If(_)         => "If".to_string(),
             Token::Else(_)       => "Else".to_string(),
+            Token::Return(_)     => "Return".to_string(),
+            Token::True(_)       => "True".to_string(),
+            Token::False(_)      => "False".to_string(),
+
             Token::Semicolon(_)  => "Semicolon".to_string(),
             Token::Comma(_)      => "Comma".to_string(),
             Token::Lparen(_)     => "Lparen".to_string(),
@@ -94,6 +101,9 @@ impl Token {
             Token::Function(literal)   |
             Token::If(literal)         |
             Token::Else(literal)       |
+            Token::Return(literal)     |
+            Token::True(literal)       |
+            Token::False(literal)      |
             Token::Semicolon(literal)  |
             Token::Comma(literal)      |
             Token::Lparen(literal)     |
