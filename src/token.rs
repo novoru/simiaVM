@@ -1,4 +1,4 @@
-#[derive(Debug,Clone)]
+#[derive(PartialEq,Debug,Clone)]
 pub enum Token {
 
     Illegal(String),
@@ -68,7 +68,6 @@ impl Token {
             Token::Return(_)     => "Return".to_string(),
             Token::True(_)       => "True".to_string(),
             Token::False(_)      => "False".to_string(),
-
             Token::Semicolon(_)  => "Semicolon".to_string(),
             Token::Comma(_)      => "Comma".to_string(),
             Token::Lparen(_)     => "Lparen".to_string(),
