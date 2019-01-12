@@ -43,15 +43,9 @@ pub enum TokenKind {
 
 }
 
-#[derive(PartialEq,Debug,Clone)]
-pub struct Token {
-    pub kind: TokenKind,
-    pub literal: String,
-}
-
-impl Token {
-/*    pub fn kind(&self) -> String {
-        match self.kind {
+impl TokenKind {
+    pub fn literal(&self) -> String {
+        match self {
             TokenKind::Illegal    => "Illegal".to_string(),
             TokenKind::Eof        => "Eof".to_string(),
             TokenKind::Identifier => "Identifier".to_string(),
@@ -84,7 +78,15 @@ impl Token {
             TokenKind::Rbracket   => "Rbracket".to_string(),
         }
     }
-*/
+}
+
+#[derive(PartialEq,Debug,Clone)]
+pub struct Token {
+    pub kind: TokenKind,
+    pub literal: String,
+}
+
+impl Token {
     pub fn literal(&self) -> String {
         match self.kind {
             TokenKind::Illegal    |
