@@ -27,9 +27,9 @@ pub enum Ast {
     },
 
     IfExpression {
-        condition: Box<Ast>,    // BlockStatement
-        body: Box<Ast>,         // BlockStatement
-        alternative: Box<Ast>,  // None | BlockStatement
+        condition: Box<Ast>,              // BlockStatement
+        body: Box<Ast>,                   // BlockStatement
+        alternative: Option<Box<Ast>>,  // None | BlockStatement
     },
 
     BlockStatement {
@@ -80,6 +80,94 @@ pub enum Ast {
 }
 
 impl Ast {
+
+    pub fn inspect(&self) -> String {
+        let mut string = "".to_string();
+        match self {
+            Ast::Program { statements } => {
+                for statement in (*statements).iter() {
+                    string = format!("{}{}", string, (*statement).inspect().to_string());
+                }
+            },
+            Ast::ExpressionStatement { expression } => string = format!("{};\n", (*expression).inspect()), 
+            Ast::LetStatement { identifier, value } => string = format!("let {} = {};", (*identifier).inspect(), (*value).inspect()), 
+            Ast::ReturnStatement { return_value } => string = format!("return {};", (*return_value).inspect()),
+            Ast::Identifier { value } => string = format!("{}", value),
+            Ast::GroupedExpression { expression_list }   => {
+                string = format!("(");
+                for (i, expression) in (*expression_list).iter().enumerate() {
+                    if i == 0 {
+                        string = format!("{}{}", string, (*expression).inspect());
+                    }
+                    else {
+                        string = format!("{},{}", string, (*expression).inspect());
+                    }
+                }
+                string = format!("{})", string);
+            },
+            Ast::IfExpression { condition, body, alternative } => {
+                string = format!("if({}){{ {} }}", (*condition).inspect(), (*body).inspect());
+                if let Some(value) = alternative {
+                    string = format!("{} else{{ {} }}", string, (*value).inspect());
+                }
+            },
+            Ast::BlockStatement { statements } => {
+                for (i, statement) in (*statements).iter().enumerate() {
+                    if i == 0 {
+                        string = format!("{}", (*statement).inspect());
+                    }
+                    else {
+                        string = format!("{}{}", string, (*statement).inspect());
+                    }
+                }
+            },
+            Ast::FunctionLiteral { arguments, body} => {
+                string = format!("fn(");
+                for (i, argument) in arguments.iter().enumerate() {
+                    if i == 0 {
+                        string = format!("{}{}", string, (*argument).inspect());
+                    }
+                    else {
+                        string = format!("{},{}", string, (*argument).inspect());
+                    }
+                }
+                string = format!("{}){{ {} }}", string, (*body).inspect());
+            },
+            Ast::ArrayLiteral { elements }        => {
+                string = format!("[");
+                for (i, element) in elements.iter().enumerate() {
+                    if i == 0 {
+                        string = format!("{}{}", string, (*element).inspect());
+                    }
+                    else {
+                        string = format!("{},{}", string, (*element).inspect());
+                    }
+                }
+                string = format!("{}]", string);
+            },
+            Ast::PrefixExpression { operator, right} => string = format!("{}{}", *operator, (*right).inspect()),
+            Ast::InfixExpression { left, operator, right} => string = format!("{}{}{}", (*left).inspect(), *operator, (*right).inspect()),
+            Ast::CallExpression { function, arguments } => {
+                string = format!("{}(", (*function).inspect());
+                for (i, argument) in arguments.iter().enumerate() {
+                    if i == 0 {
+                        string = format!("{}{}", string, (*argument).inspect());
+                    }
+                    else {
+                        string = format!("{},{}", string, (*argument).inspect());
+                    }
+                }
+                string = format!("{})", string);
+            },
+            Ast::IndexExpression { index }     => string = format!("[{}]", (*index).inspect()),
+            Ast::Integer { value } => string = format!("{}", value),
+            Ast::Boolean { value } => string = format!("{}", value),
+            Ast::StringLiteral { value } => string = value.to_string(),
+        }
+
+        string
+    }
+
     pub fn kind(&self) -> String {
         match self {
             Ast::Program {..}             => "Program".to_string(),
@@ -92,7 +180,7 @@ impl Ast {
             Ast::BlockStatement {..}      => "BlockStatement".to_string(),
             Ast::FunctionLiteral {..}     => "FunctionLiteral".to_string(),
             Ast::ArrayLiteral {..}        => "ArrayLiteral".to_string(),
-            Ast::PrefixExpression {..}     => "PrefixExpression".to_string(),
+            Ast::PrefixExpression {..}    => "PrefixExpression".to_string(),
             Ast::InfixExpression {..}     => "InfixExpression".to_string(),
             Ast::CallExpression {..}      => "CallExpression".to_string(),
             Ast::IndexExpression {..}     => "IndexExpression".to_string(),

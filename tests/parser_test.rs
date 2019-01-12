@@ -17,7 +17,7 @@ fn test_integer_literal_expression() {
         let program = parser.parse_program();
 
         if let Ast::Program { ref mut statements } = program.unwrap() {
-            for (i, statement) in statements.iter().enumerate() {
+            for statement in statements.iter() {
                 if let Ast::ExpressionStatement { ref expression } = **statement {
                     if let Ast::Integer { value } = **expression {
                         assert_eq!(value, test.1);
