@@ -49,13 +49,13 @@ impl Parser {
     fn parse_statement(&mut self) -> Option<Ast> {
         match self.cur_token.kind {
             TokenKind::Let    => self.parse_let_statement(),
-            TokenKind::Return => return None, // ToDo
-            _                => self.parse_expression_statement(),
+            TokenKind::Return => self.parse_return_statement(),
+            _                 => self.parse_expression_statement(),
         }
     }
 
     fn parse_let_statement(&mut self) -> Option<Ast> {
-        if !self.expect_peek(TokenKind::Let) {
+        if !self.expect_peek(TokenKind::Identifier) {
             return None;
         }
 
@@ -81,6 +81,23 @@ impl Parser {
         Some(Ast::LetStatement {
             identifier: identifier,
             value: value,
+        })
+    }
+
+    fn parse_return_statement(&mut self) -> Option<Ast> {
+        self.next_token();
+
+        let return_value = match self.parse_expression() {
+            Some(value) => Box::new(value),
+            None        => return None,
+        };
+
+        if self.peek_token_is(TokenKind::Semicolon) {
+            self.next_token();
+        }
+
+        Some(Ast::ReturnStatement {
+            return_value: return_value,
         })
     }
     
