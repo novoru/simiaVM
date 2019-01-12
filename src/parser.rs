@@ -32,7 +32,7 @@ impl Parser {
     pub fn parse_program(&mut self) -> Option<Ast> {
         let mut program = Ast::Program { statements: Box::new(Vec::new()) };
 
-        while self.cur_token.kind() != "Eof".to_string() {
+        while !self.cur_token_is("Eof".to_string()) {
             if let Some(value) = self.parse_statement() {
                 if let Ast::Program { ref mut statements } = program {
                     statements.push(Box::new(value));
@@ -48,10 +48,40 @@ impl Parser {
 
     fn parse_statement(&mut self) -> Option<Ast> {
         match self.cur_token {
-            Token::Let(_)    => return None, // ToDo
+            Token::Let(_)    => self.parse_let_statement(),
             Token::Return(_) => return None, // ToDo
             _                => self.parse_expression_statement(),
         }
+    }
+
+    fn parse_let_statement(&mut self) -> Option<Ast> {
+        if !self.expect_peek("Ident".to_string()) {
+            return None;
+        }
+
+        let identifier = Box::new(Ast::Identifier {
+            value: Box::new(self.cur_token.clone().literal()),
+        });
+
+        if !self.expect_peek("Assign".to_string()) {
+            return None;
+        }
+
+        self.next_token();
+        
+        let value = match self.parse_expression() {
+            Some(value) => Box::new(value),
+            None        => return None,
+        };
+
+        if self.peek_token_is("Semicolon".to_string()) {
+            self.next_token();
+        }
+        
+        Some(Ast::LetStatement {
+            identifier: identifier,
+            value: value,
+        })
     }
     
     fn parse_expression_statement(&mut self) -> Option<Ast> {
@@ -89,6 +119,23 @@ impl Parser {
         };
 
         Some(Ast::Integer { value: value })
+    }
+
+    fn cur_token_is(&self, kind: String) -> bool {
+        self.cur_token.kind() == kind
+    }
+
+    fn peek_token_is(&self, kind: String) -> bool {
+        self.peek_token.kind() == kind
+    }
+
+    fn expect_peek(&mut self, kind: String) -> bool {
+        if self.peek_token_is(kind) {
+            self.next_token();
+            return true;
+        }
+
+        false
     }
     
     fn parse_error(&mut self) {
