@@ -1,6 +1,6 @@
 extern crate simiaVM;
 
-use simiaVM::token::{ Token };
+use simiaVM::token::{ Token, TokenKind };
 use simiaVM::lexier::{ Lexier };
 
 #[test]
@@ -22,86 +22,86 @@ fn(a) {               \
 ".to_string();
     let mut lexier = Lexier::new(input);
 
-    let tests = [ Token::Assign("=".to_string()),
-                  Token::Plus("+".to_string()),
-                  Token::Minus("-".to_string()),
-                  Token::Asterisk("*".to_string()),
-                  Token::Slash("/".to_string()),
-                  Token::Bang("!".to_string()),
-                  Token::Lt("<".to_string()),
-                  Token::Gt(">".to_string()),
-                  Token::Semicolon(";".to_string()),
-                  Token::Comma(",".to_string()),
-                  Token::Lparen("(".to_string()),
-                  Token::Rparen(")".to_string()),
-                  Token::Lbrace("{".to_string()),
-                  Token::Rbrace("}".to_string()),
-                  Token::Lbracket("[".to_string()),
-                  Token::Rbracket("]".to_string()),
+    let tests = [ Token { kind: TokenKind::Assign, literal: "=".to_string() },
+                  Token { kind: TokenKind::Plus, literal: "+".to_string() },
+                  Token { kind: TokenKind::Minus, literal: "-".to_string() },
+                  Token { kind: TokenKind::Asterisk, literal: "*".to_string() },
+                  Token { kind: TokenKind::Slash, literal: "/".to_string() },
+                  Token { kind: TokenKind::Bang, literal: "!".to_string() },
+                  Token { kind: TokenKind::Lt, literal: "<".to_string() },
+                  Token { kind: TokenKind::Gt, literal: ">".to_string() },
+                  Token { kind: TokenKind::Semicolon, literal: ";".to_string() },
+                  Token { kind: TokenKind::Comma, literal: ",".to_string() },
+                  Token { kind: TokenKind::Lparen, literal: "(".to_string() },
+                  Token { kind: TokenKind::Rparen, literal: ")".to_string() },
+                  Token { kind: TokenKind::Lbrace, literal: "{".to_string() },
+                  Token { kind: TokenKind::Rbrace, literal: "}".to_string() },
+                  Token { kind: TokenKind::Lbracket, literal: "[".to_string() },
+                  Token { kind: TokenKind::Rbracket, literal: "]".to_string() },
 
-                  Token::Integer("100".to_string()),
-                  Token::Integer("200".to_string()),
-                  Token::Semicolon(";".to_string()),
+                  Token { kind: TokenKind::Integer, literal: "100".to_string() },
+                  Token { kind: TokenKind::Integer, literal: "200".to_string() },
+                  Token { kind: TokenKind::Semicolon, literal: ";".to_string() },
 
-                  Token::Identifier("foo".to_string()),
-                  Token::Identifier("bar".to_string()),
-                  Token::Semicolon(";".to_string()),
+                  Token { kind: TokenKind::Identifier, literal: "foo".to_string() },
+                  Token { kind: TokenKind::Identifier, literal: "bar".to_string() },
+                  Token { kind: TokenKind::Semicolon, literal: ";".to_string() },
                   
-                  Token::String("foo".to_string()),
-                  Token::String("bar".to_string()),
-                  Token::String("".to_string()),
-                  Token::Semicolon(";".to_string()),
+                  Token { kind: TokenKind::String, literal: "foo".to_string() },
+                  Token { kind: TokenKind::String, literal: "bar".to_string() },
+                  Token { kind: TokenKind::String, literal: "".to_string() },
+                  Token { kind: TokenKind::Semicolon, literal: ";".to_string() },
 
-                  Token::True("true".to_string()),
-                  Token::False("false".to_string()),
-                  Token::Semicolon(";".to_string()),
+                  Token { kind: TokenKind::True, literal: "true".to_string() },
+                  Token { kind: TokenKind::False, literal: "false".to_string() },
+                  Token { kind: TokenKind::Semicolon, literal: ";".to_string() },
 
-                  Token::Return("return".to_string()),
-                  Token::Semicolon(";".to_string()),
+                  Token { kind: TokenKind::Return, literal: "return".to_string() },
+                  Token { kind: TokenKind::Semicolon, literal: ";".to_string() },
 
-                  Token::If("if".to_string()),
-                  Token::Lparen("(".to_string()),
-                  Token::True("true".to_string()),
-                  Token::Rparen(")".to_string()),
-                  Token::Lbrace("{".to_string()),
+                  Token { kind: TokenKind::If, literal: "if".to_string() },
+                  Token { kind: TokenKind::Lparen, literal: "(".to_string() },
+                  Token { kind: TokenKind::True, literal: "true".to_string() },
+                  Token { kind: TokenKind::Rparen, literal: ")".to_string() },
+                  Token { kind: TokenKind::Lbrace, literal: "{".to_string() },
                   
-                  Token::Return("return".to_string()),
-                  Token::Identifier("a".to_string()),
-                  Token::Semicolon(";".to_string()),
+                  Token { kind: TokenKind::Return, literal: "return".to_string() },
+                  Token { kind: TokenKind::Identifier, literal: "a".to_string() },
+                  Token { kind: TokenKind::Semicolon, literal: ";".to_string() },
 
-                  Token::Rbrace("}".to_string()),
+                  Token { kind: TokenKind::Rbrace, literal: "}".to_string() },
                   
 
-                  Token::Function("fn".to_string()),
-                  Token::Lparen("(".to_string()),
-                  Token::Identifier("a".to_string()),
-                  Token::Rparen(")".to_string()),
-                  Token::Lbrace("{".to_string()),
+                  Token { kind: TokenKind::Function, literal: "fn".to_string() },
+                  Token { kind: TokenKind::Lparen, literal: "(".to_string() },
+                  Token { kind: TokenKind::Identifier, literal: "a".to_string() },
+                  Token { kind: TokenKind::Rparen, literal: ")".to_string() },
+                  Token { kind: TokenKind::Lbrace, literal: "{".to_string() },
                   
-                  Token::Return("return".to_string()),
-                  Token::Identifier("a".to_string()),
-                  Token::Plus("+".to_string()),
-                  Token::Identifier("b".to_string()),
-                  Token::Semicolon(";".to_string()),
+                  Token { kind: TokenKind::Return, literal: "return".to_string() },
+                  Token { kind: TokenKind::Identifier, literal: "a".to_string() },
+                  Token { kind: TokenKind::Plus, literal: "+".to_string() },
+                  Token { kind: TokenKind::Identifier, literal: "b".to_string() },
+                  Token { kind: TokenKind::Semicolon, literal: ";".to_string() },
 
-                  Token::Rbrace("}".to_string()),
+                  Token { kind: TokenKind::Rbrace, literal: "}".to_string() },
 
-                  Token::Lbracket("[".to_string()),
-                  Token::Integer("1".to_string()),
-                  Token::Comma(",".to_string()),
-                  Token::Integer("2".to_string()),
-                  Token::Comma(",".to_string()),
-                  Token::Identifier("a".to_string()),
-                  Token::Rbracket("]".to_string()),
-                  Token::Semicolon(";".to_string()),
+                  Token { kind: TokenKind::Lbracket, literal: "[".to_string() },
+                  Token { kind: TokenKind::Integer, literal: "1".to_string() },
+                  Token { kind: TokenKind::Comma, literal: ",".to_string() },
+                  Token { kind: TokenKind::Integer, literal: "2".to_string() },
+                  Token { kind: TokenKind::Comma, literal: ",".to_string() },
+                  Token { kind: TokenKind::Identifier, literal: "a".to_string() },
+                  Token { kind: TokenKind::Rbracket, literal: "]".to_string() },
+                  Token { kind: TokenKind::Semicolon, literal: ";".to_string() },
                   
-                  Token::Eof("\0".to_string()),
+                  Token { kind: TokenKind::Eof, literal: "\0".to_string() },
     ];
 
     for test in tests.iter() {
         let token = lexier.next_token();
-        assert_eq!(token.kind(), test.kind());
-        assert_eq!(token.literal(), test.literal());
+        assert!(token.kind == test.kind);
+        assert_eq!(token.literal, test.literal);
     }
     
 }

@@ -1,116 +1,122 @@
 #[derive(PartialEq,Debug,Clone)]
-pub enum Token {
+pub enum TokenKind {
 
-    Illegal(String),
-    Eof(String),
+    Illegal,
+    Eof,
     
-    Identifier(String),
-    Integer(String),
-    String(String),
+    Identifier,
+    Integer,
+    String,
 
     // Operator
-    Assign(String),       // '='
-    Plus(String),         // '+'
-    Minus(String),        // '-'
-    Asterisk(String),     // '*'
-    Slash(String),        // '/'
-    Bang(String),         // '!'
+    Assign,       // '='
+    Plus,         // '+'
+    Minus,        // '-'
+    Asterisk,     // '*'
+    Slash,        // '/'
+    Bang,         // '!'
 
-    Eq(String),           // '=='
-    NotEq(String),        // '!='
-    Lt(String),           // '<'
-    Gt(String),           // '>'
+    Eq,           // '=='
+    NotEq,        // '!='
+    Lt,           // '<'
+    Gt,           // '>'
 
     // Keyword
-    Let(String),          // 'let'
-    Function(String),     // 'fn'
-    If(String),           // 'if'
-    Else(String),         // 'else'
-    Return(String),       // 'return'
-    True(String),         // 'true'
-    False(String),        // 'false'
+    Let,          // 'let'
+    Function,     // 'fn'
+    If,           // 'if'
+    Else,         // 'else'
+    Return,       // 'return'
+    True,         // 'true'
+    False,        // 'false'
     
     // Delimeter
-    Semicolon(String),    // ';'
-    Comma(String),        // ','
+    Semicolon,    // ';'
+    Comma,        // ','
 
-    Lparen(String),       // '('
-    Rparen(String),       // ')'
-    Lbrace(String),       // '{'
-    Rbrace(String),       // '}'
-    Lbracket(String),     // '['
-    Rbracket(String),     // ']'
+    Lparen,       // '('
+    Rparen,       // ')'
+    Lbrace,       // '{'
+    Rbrace,       // '}'
+    Lbracket,     // '['
+    Rbracket,     // ']'
 
 }
 
+#[derive(PartialEq,Debug,Clone)]
+pub struct Token {
+    pub kind: TokenKind,
+    pub literal: String,
+}
+
 impl Token {
-    pub fn kind(&self) -> String {
-        match self {
-            Token::Illegal(_)    => "Illegal".to_string(),
-            Token::Eof(_)        => "Eof".to_string(),
-            Token::Identifier(_) => "Identifier".to_string(),
-            Token::Integer(_)    => "Integer".to_string(),
-            Token::String(_)     => "String".to_string(),
-            Token::Assign(_)     => "Assign".to_string(),
-            Token::Plus(_)       => "Plus".to_string(),
-            Token::Minus(_)      => "Minus".to_string(),
-            Token::Asterisk(_)   => "Asterisk".to_string(),
-            Token::Slash(_)      => "Slash".to_string(),
-            Token::Bang(_)       => "Bang".to_string(),
-            Token::Eq(_)         => "Eq".to_string(),
-            Token::NotEq(_)      => "NotEq".to_string(),
-            Token::Lt(_)         => "Lt".to_string(),
-            Token::Gt(_)         => "Gt".to_string(),
-            Token::Let(_)        => "Let".to_string(),
-            Token::Function(_)   => "Function".to_string(),
-            Token::If(_)         => "If".to_string(),
-            Token::Else(_)       => "Else".to_string(),
-            Token::Return(_)     => "Return".to_string(),
-            Token::True(_)       => "True".to_string(),
-            Token::False(_)      => "False".to_string(),
-            Token::Semicolon(_)  => "Semicolon".to_string(),
-            Token::Comma(_)      => "Comma".to_string(),
-            Token::Lparen(_)     => "Lparen".to_string(),
-            Token::Rparen(_)     => "Rparen".to_string(),
-            Token::Lbrace(_)     => "Lbrace".to_string(),
-            Token::Rbrace(_)     => "Rbrace".to_string(),
-            Token::Lbracket(_)   => "Lbracket".to_string(),
-            Token::Rbracket(_)   => "Rbracket".to_string(),
+/*    pub fn kind(&self) -> String {
+        match self.kind {
+            TokenKind::Illegal    => "Illegal".to_string(),
+            TokenKind::Eof        => "Eof".to_string(),
+            TokenKind::Identifier => "Identifier".to_string(),
+            TokenKind::Integer    => "Integer".to_string(),
+            TokenKind::String     => "String".to_string(),
+            TokenKind::Assign     => "Assign".to_string(),
+            TokenKind::Plus       => "Plus".to_string(),
+            TokenKind::Minus      => "Minus".to_string(),
+            TokenKind::Asterisk   => "Asterisk".to_string(),
+            TokenKind::Slash      => "Slash".to_string(),
+            TokenKind::Bang       => "Bang".to_string(),
+            TokenKind::Eq         => "Eq".to_string(),
+            TokenKind::NotEq      => "NotEq".to_string(),
+            TokenKind::Lt         => "Lt".to_string(),
+            TokenKind::Gt         => "Gt".to_string(),
+            TokenKind::Let        => "Let".to_string(),
+            TokenKind::Function   => "Function".to_string(),
+            TokenKind::If         => "If".to_string(),
+            TokenKind::Else       => "Else".to_string(),
+            TokenKind::Return     => "Return".to_string(),
+            TokenKind::True       => "True".to_string(),
+            TokenKind::False      => "False".to_string(),
+            TokenKind::Semicolon  => "Semicolon".to_string(),
+            TokenKind::Comma      => "Comma".to_string(),
+            TokenKind::Lparen     => "Lparen".to_string(),
+            TokenKind::Rparen     => "Rparen".to_string(),
+            TokenKind::Lbrace     => "Lbrace".to_string(),
+            TokenKind::Rbrace     => "Rbrace".to_string(),
+            TokenKind::Lbracket   => "Lbracket".to_string(),
+            TokenKind::Rbracket   => "Rbracket".to_string(),
         }
     }
-
+*/
     pub fn literal(&self) -> String {
-        match self {
-            Token::Illegal(literal)    |
-            Token::Eof(literal)        |
-            Token::Identifier(literal) |
-            Token::Integer(literal)    |
-            Token::String(literal)     |
-            Token::Assign(literal)     |
-            Token::Plus(literal)       |
-            Token::Minus(literal)      |
-            Token::Asterisk(literal)   |
-            Token::Slash(literal)      |
-            Token::Bang(literal)       |
-            Token::Eq(literal)         |
-            Token::NotEq(literal)      |
-            Token::Lt(literal)         |
-            Token::Gt(literal)         |
-            Token::Let(literal)        |
-            Token::Function(literal)   |
-            Token::If(literal)         |
-            Token::Else(literal)       |
-            Token::Return(literal)     |
-            Token::True(literal)       |
-            Token::False(literal)      |
-            Token::Semicolon(literal)  |
-            Token::Comma(literal)      |
-            Token::Lparen(literal)     |
-            Token::Rparen(literal)     |
-            Token::Lbrace(literal)     |
-            Token::Rbrace(literal)     |
-            Token::Lbracket(literal)   |
-            Token::Rbracket(literal)   => literal.to_string(),
+        match self.kind {
+            TokenKind::Illegal    |
+            TokenKind::Eof        |
+            TokenKind::Identifier |
+            TokenKind::Integer    |
+            TokenKind::String     |
+            TokenKind::Assign     |
+            TokenKind::Plus       |
+            TokenKind::Minus      |
+            TokenKind::Asterisk   |
+            TokenKind::Slash      |
+            TokenKind::Bang       |
+            TokenKind::Eq         |
+            TokenKind::NotEq      |
+            TokenKind::Lt         |
+            TokenKind::Gt         |
+            TokenKind::Let        |
+            TokenKind::Function   |
+            TokenKind::If         |
+            TokenKind::Else       |
+            TokenKind::Return     |
+            TokenKind::True       |
+            TokenKind::False      |
+            TokenKind::Semicolon  |
+            TokenKind::Comma      |
+            TokenKind::Lparen     |
+            TokenKind::Rparen     |
+            TokenKind::Lbrace     |
+            TokenKind::Rbrace     |
+            TokenKind::Lbracket   |
+            TokenKind::Rbracket   => self.literal.to_string(),
         }
     }
 }

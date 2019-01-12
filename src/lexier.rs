@@ -1,4 +1,4 @@
-use crate::token::{ Token };
+use crate::token::{ Token, TokenKind };
 
 pub struct Lexier {
     input: String,
@@ -25,54 +25,54 @@ impl Lexier {
         self.skip();
 
         match self.ch {
-            '=' => token = Token::Assign(self.ch.to_string()),
-            '+' => token = Token::Plus(self.ch.to_string()),
-            '-' => token = Token::Minus(self.ch.to_string()),
-            '*' => token = Token::Asterisk(self.ch.to_string()),
-            '/' => token = Token::Slash(self.ch.to_string()),
-            '!' => token = Token::Bang(self.ch.to_string()),
-            '<' => token = Token::Lt(self.ch.to_string()),
-            '>' => token = Token::Gt(self.ch.to_string()),
-            ';' => token = Token::Semicolon(self.ch.to_string()),
-            ',' => token = Token::Comma(self.ch.to_string()),
-            '(' => token = Token::Lparen(self.ch.to_string()),
-            ')' => token = Token::Rparen(self.ch.to_string()),
-            '{' => token = Token::Lbrace(self.ch.to_string()),
-            '}' => token = Token::Rbrace(self.ch.to_string()),
-            '[' => token = Token::Lbracket(self.ch.to_string()),
-            ']' => token = Token::Rbracket(self.ch.to_string()),
-            '0' ... '9' => return Token::Integer(self.read_integer()),
+            '=' => token = Token { kind: TokenKind::Assign, literal: self.ch.to_string() },
+            '+' => token = Token { kind: TokenKind::Plus, literal: self.ch.to_string() },
+            '-' => token = Token { kind: TokenKind::Minus, literal: self.ch.to_string() },
+            '*' => token = Token { kind: TokenKind::Asterisk, literal: self.ch.to_string() },
+            '/' => token = Token { kind: TokenKind::Slash, literal: self.ch.to_string() },
+            '!' => token = Token { kind: TokenKind::Bang, literal: self.ch.to_string() },
+            '<' => token = Token { kind: TokenKind::Lt, literal: self.ch.to_string() },
+            '>' => token = Token { kind: TokenKind::Gt, literal: self.ch.to_string() },
+            ';' => token = Token { kind: TokenKind::Semicolon, literal: self.ch.to_string() },
+            ',' => token = Token { kind: TokenKind::Comma, literal: self.ch.to_string() },
+            '(' => token = Token { kind: TokenKind::Lparen, literal: self.ch.to_string() },
+            ')' => token = Token { kind: TokenKind::Rparen, literal: self.ch.to_string() },
+            '{' => token = Token { kind: TokenKind::Lbrace, literal: self.ch.to_string() },
+            '}' => token = Token { kind: TokenKind::Rbrace, literal: self.ch.to_string() },
+            '[' => token = Token { kind: TokenKind::Lbracket, literal: self.ch.to_string() },
+            ']' => token = Token { kind: TokenKind::Rbracket, literal: self.ch.to_string() },
+            '0' ... '9' => return Token { kind: TokenKind::Integer, literal: self.read_integer() },
             'a' ... 'z' |
             'A' ... 'Z' |
             '_'  => {
                 let ident = self.read_identifier();
                 if ident == "let" {
-                    return Token::Let(ident);
+                    return Token { kind: TokenKind::Let, literal: ident };
                 }
                 else if ident == "fn" {
-                    return Token::Function(ident);
+                    return Token { kind: TokenKind::Function, literal: ident };
                 }
                 else if ident == "if" {
-                    return Token::If(ident);
+                    return Token { kind: TokenKind::If, literal: ident };
                 }
                 else if ident == "else" {
-                    return Token::Else(ident);
+                    return Token { kind: TokenKind::Else, literal: ident };
                 }
                 else if ident == "return" {
-                    return Token::Return(ident);
+                    return Token { kind: TokenKind::Return, literal: ident };
                 }
                 else if ident == "true" {
-                    return Token::True(ident);
+                    return Token { kind: TokenKind::True, literal: ident };
                 }
                 else if ident == "false" {
-                    return Token::False(ident);
+                    return Token { kind: TokenKind::False, literal: ident };
                 }
 
-                return Token::Identifier(ident)
+                return Token { kind: TokenKind::Identifier, literal: ident }
             },
-            '"'  => token = Token::String(self.read_string()),
-            '\0' => return  Token::Eof(self.ch.to_string()),
-            _ => token = Token::Illegal(self.ch.to_string()),
+            '"'  => token = Token { kind: TokenKind::String, literal: self.read_string() },
+            '\0' => return  Token { kind: TokenKind::Eof, literal: self.ch.to_string() },
+            _ => token = Token { kind: TokenKind::Illegal, literal: self.ch.to_string() },
         }
         
         self.read_char();

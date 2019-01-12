@@ -1,6 +1,6 @@
 use crate::ast::{ Ast };
 use crate::lexier::{ Lexier };
-use crate::token::{ Token };
+use crate::token::{ Token, TokenKind };
 
 pub struct Parser {
     lexier: Lexier,
@@ -13,8 +13,8 @@ impl Parser {
     pub fn new(lexier: Lexier) -> Parser {
         let mut parser = Parser {
             lexier: lexier,
-            cur_token:  Token::Illegal("".to_string()),
-            peek_token: Token::Illegal("".to_string()),
+            cur_token:  Token { kind: TokenKind::Illegal, literal: "".to_string() },
+            peek_token: Token { kind: TokenKind::Illegal, literal: "".to_string() },
             errors: Vec::new(),
         };
 
@@ -32,7 +32,7 @@ impl Parser {
     pub fn parse_program(&mut self) -> Option<Ast> {
         let mut program = Ast::Program { statements: Box::new(Vec::new()) };
 
-        while !self.cur_token_is("Eof".to_string()) {
+        while !self.cur_token_is(TokenKind::Eof) {
             if let Some(value) = self.parse_statement() {
                 if let Ast::Program { ref mut statements } = program {
                     statements.push(Box::new(value));
@@ -47,15 +47,15 @@ impl Parser {
     }
 
     fn parse_statement(&mut self) -> Option<Ast> {
-        match self.cur_token {
-            Token::Let(_)    => self.parse_let_statement(),
-            Token::Return(_) => return None, // ToDo
+        match self.cur_token.kind {
+            TokenKind::Let    => self.parse_let_statement(),
+            TokenKind::Return => return None, // ToDo
             _                => self.parse_expression_statement(),
         }
     }
 
     fn parse_let_statement(&mut self) -> Option<Ast> {
-        if !self.expect_peek("Ident".to_string()) {
+        if !self.expect_peek(TokenKind::Let) {
             return None;
         }
 
@@ -63,7 +63,7 @@ impl Parser {
             value: Box::new(self.cur_token.clone().literal()),
         });
 
-        if !self.expect_peek("Assign".to_string()) {
+        if !self.expect_peek(TokenKind::Assign) {
             return None;
         }
 
@@ -74,7 +74,7 @@ impl Parser {
             None        => return None,
         };
 
-        if self.peek_token_is("Semicolon".to_string()) {
+        if self.peek_token_is(TokenKind::Semicolon) {
             self.next_token();
         }
         
@@ -93,7 +93,7 @@ impl Parser {
             },
         };
 
-        if self.peek_token == Token::Semicolon(";".to_string()) {
+        if self.peek_token_is(TokenKind::Semicolon) {
             self.next_token();
         }
 
@@ -102,8 +102,8 @@ impl Parser {
 
     fn parse_expression(&mut self) -> Option<Ast> {
         // ToDo
-        let left_exp = match self.cur_token {
-            Token::Integer (_) => self.parse_integer_literal(),
+        let left_exp = match self.cur_token.kind {
+            TokenKind::Integer => self.parse_integer_literal(),
             _                  => return None,
         };
         
@@ -121,15 +121,15 @@ impl Parser {
         Some(Ast::Integer { value: value })
     }
 
-    fn cur_token_is(&self, kind: String) -> bool {
-        self.cur_token.kind() == kind
+    fn cur_token_is(&self, kind: TokenKind) -> bool {
+        self.cur_token.kind == kind
     }
 
-    fn peek_token_is(&self, kind: String) -> bool {
-        self.peek_token.kind() == kind
+    fn peek_token_is(&self, kind: TokenKind) -> bool {
+        self.peek_token.kind == kind
     }
 
-    fn expect_peek(&mut self, kind: String) -> bool {
+    fn expect_peek(&mut self, kind: TokenKind) -> bool {
         if self.peek_token_is(kind) {
             self.next_token();
             return true;
