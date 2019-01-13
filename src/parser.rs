@@ -120,8 +120,13 @@ impl Parser {
     fn parse_expression(&mut self) -> Option<Ast> {
         // ToDo
         let left_exp = match self.cur_token.kind {
-            TokenKind::Integer => self.parse_integer_literal(),
-            _                  => return None,
+            TokenKind::Integer  => self.parse_integer_literal(),
+            TokenKind::True     |
+            TokenKind::False    => self.parse_boolean_literal(),
+            TokenKind::String   => self.parse_string_literal(),
+            TokenKind::Bang     |
+            TokenKind::Minus    => self.parse_prefix_expression(),
+            _                   => return None,
         };
         
         self.next_token();
@@ -138,6 +143,31 @@ impl Parser {
         Some(Ast::Integer { value: value })
     }
 
+    fn parse_boolean_literal(&self) -> Option<Ast> {
+        Some(Ast::Boolean { value: self.cur_token_is(TokenKind::True) })
+    }
+
+    fn parse_string_literal(&self) -> Option<Ast> {
+        Some(Ast::StringLiteral { value: Box::new(self.cur_token.literal()) })
+    }
+
+    fn parse_prefix_expression(&mut self) -> Option<Ast> {
+        let operator = Box::new(self.cur_token.literal());
+        self.next_token();
+        
+        let right = match self.parse_expression() {
+            Some(value) => Box::new(value),
+            None        => return None,
+        };
+        
+        Some(Ast::PrefixExpression {
+            operator: operator,
+            right: right,
+        })
+
+        
+    }
+    
     fn cur_token_is(&self, kind: TokenKind) -> bool {
         self.cur_token.kind == kind
     }
