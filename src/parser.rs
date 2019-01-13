@@ -148,7 +148,6 @@ impl Parser {
     }
 
     fn parse_expression(&mut self, precedence: Precedence) -> Option<Ast> {
-        // ToDo
         let mut left_exp = match self.cur_token.kind.clone() {
             TokenKind::Integer  => self.parse_integer_literal(),
             TokenKind::True     |
@@ -156,6 +155,8 @@ impl Parser {
             TokenKind::String   => self.parse_string_literal(),
             TokenKind::Bang     |
             TokenKind::Minus    => self.parse_prefix_expression(),
+            TokenKind::Lparen   => self.parse_grouped_expression(),
+            TokenKind::If       => self.parse_if_expression(),
             _                   => {
                 self.no_prefix_parse_fn_error(self.cur_token.kind.clone());
                 return None;
@@ -233,6 +234,76 @@ impl Parser {
             left: left,
             operator: operator,
             right: right,
+        })
+    }
+
+    fn parse_grouped_expression(&mut self) -> Option<Ast> {
+        self.next_token();
+
+        let grouped_expression = self.parse_expression(Precedence::Lowest);
+
+        if !self.expect_peek(TokenKind::Rparen) {
+            return None;
+        }
+
+        grouped_expression
+    }
+
+    fn parse_if_expression(&mut self) -> Option<Ast> {
+        if !self.expect_peek(TokenKind::Lparen) {
+            return None;
+        }
+
+        let condition = match self.parse_grouped_expression() {
+            Some(value) => Box::new(value),
+            None        => return None,
+        };
+
+        if !self.expect_peek(TokenKind::Lbrace) {
+            return None;
+        }
+
+        let body = match self.parse_block_statement() {
+            Some(value) => Box::new(value),
+            None        => return None,
+        };
+
+        let mut alternative = None;
+
+        if self.peek_token_is(TokenKind::Else) {
+            if self.expect_peek(TokenKind::Lbrace) {
+                return None;
+            }
+            
+            let alternative = match self.parse_block_statement() {
+                Some(value) => Some(Box::new(value)),
+                None        => None,
+            };
+        }
+        
+        Some(Ast::IfExpression {
+            condition: condition,
+            body: body,
+            alternative: alternative,
+        })
+        
+    }
+
+    fn parse_block_statement(&mut self) -> Option<Ast> {
+        self.next_token();
+
+        let mut statements = Vec::new();
+        
+        while !self.peek_token_is(TokenKind::Rbrace) && !self.peek_token_is(TokenKind::Eof) {
+            match self.parse_statement() {
+                Some(value) => statements.push(Box::new(value)),
+                None        => return None,
+            }
+            self.next_token();
+        }
+
+        Some(Ast::BlockStatement {
+            statements: Box::new(statements),
         })
     }
     

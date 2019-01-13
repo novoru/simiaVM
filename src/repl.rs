@@ -1,6 +1,4 @@
-use crate::ast:: { Ast };
 use crate::lexier::Lexier;
-use crate::token::{ TokenKind };
 use crate::parser:: { Parser };
 use std::io::{ self, Write, stdin };
 
