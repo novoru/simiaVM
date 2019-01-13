@@ -85,7 +85,7 @@ impl Ast {
                     string = format!("{}{}", string, (*statement).inspect().to_string());
                 }
             },
-            Ast::ExpressionStatement { expression } => string = format!("{};\n", (*expression).inspect()), 
+            Ast::ExpressionStatement { expression } => string = format!("{}", (*expression).inspect()), 
             Ast::LetStatement { identifier, value } => string = format!("let {} = {};", (*identifier).inspect(), (*value).inspect()), 
             Ast::ReturnStatement { return_value } => string = format!("return {};", (*return_value).inspect()),
             Ast::Identifier { value } => string = format!("{}", value),

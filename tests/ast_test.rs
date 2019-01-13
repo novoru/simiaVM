@@ -42,6 +42,18 @@ fn test_ast_inspect() {
         value: 0,
     });
 
+    // Expression Statement
+    let expr_stmt = Ast::ExpressionStatement {
+        expression: Box::new(ident.clone()),
+    };
+
+    assert_eq!(expr_stmt.inspect(), "foo".to_string());
+
+    let value = Box::new(Ast::Integer {
+        value: 0,
+    });
+    
+    
     // Let Statement
     let let_stmt = Ast::LetStatement {
         identifier: Box::new(ident.clone()),
