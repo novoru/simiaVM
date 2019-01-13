@@ -25,12 +25,28 @@ impl Lexier {
         self.skip();
 
         match self.ch {
-            '=' => token = Token { kind: TokenKind::Assign, literal: self.ch.to_string() },
+            '=' => {
+                if self.peek_char() == '=' {
+                    self.read_char();
+                    token = Token { kind: TokenKind::Eq, literal: "==".to_string() };
+                }
+                else {
+                    token = Token { kind: TokenKind::Assign, literal: self.ch.to_string() };
+                }
+            },
             '+' => token = Token { kind: TokenKind::Plus, literal: self.ch.to_string() },
             '-' => token = Token { kind: TokenKind::Minus, literal: self.ch.to_string() },
             '*' => token = Token { kind: TokenKind::Asterisk, literal: self.ch.to_string() },
             '/' => token = Token { kind: TokenKind::Slash, literal: self.ch.to_string() },
-            '!' => token = Token { kind: TokenKind::Bang, literal: self.ch.to_string() },
+            '!' =>  {
+                if self.peek_char() == '=' {
+                    self.read_char();
+                    token = Token { kind: TokenKind::NotEq, literal: "!=".to_string() };
+                }
+                else {
+                    token = Token { kind: TokenKind::Bang, literal: self.ch.to_string() };
+                }
+            },
             '<' => token = Token { kind: TokenKind::Lt, literal: self.ch.to_string() },
             '>' => token = Token { kind: TokenKind::Gt, literal: self.ch.to_string() },
             ';' => token = Token { kind: TokenKind::Semicolon, literal: self.ch.to_string() },
@@ -85,6 +101,14 @@ impl Lexier {
         }
     }
 
+    fn peek_char(&self) -> char {
+        if self.read_position + 1 >= self.input.len() {
+            return '\0';
+        }
+        self.input.chars()
+            .skip(self.read_position).next().unwrap()
+    }
+    
     pub fn read_char(&mut self) {
         if self.read_position >= self.input.len() {
             self.ch = '\0';

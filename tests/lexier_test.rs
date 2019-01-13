@@ -6,7 +6,7 @@ use simiaVM::lexier::{ Lexier };
 #[test]
 fn test_next_token() {
     let input = "     \
-=+-*/!<>;,(){}[]      \
+=+-*/!<>;,(){}[]==!=  \
 100 200;              \
 foo bar;              \
 \"foo\" \"bar\" \"\"; \
@@ -38,6 +38,8 @@ fn(a) {               \
                   Token { kind: TokenKind::Rbrace, literal: "}".to_string() },
                   Token { kind: TokenKind::Lbracket, literal: "[".to_string() },
                   Token { kind: TokenKind::Rbracket, literal: "]".to_string() },
+                  Token { kind: TokenKind::Eq, literal: "==".to_string() },
+                  Token { kind: TokenKind::NotEq, literal: "!=".to_string() },
 
                   Token { kind: TokenKind::Integer, literal: "100".to_string() },
                   Token { kind: TokenKind::Integer, literal: "200".to_string() },
