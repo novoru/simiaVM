@@ -12,10 +12,52 @@ enum TestType {
     Boolean(bool),
 }
 
+fn test_literal(literal: Ast, expected: TestType) -> bool {
+    match literal.clone() {
+        Ast::Integer { value } => {
+            if let TestType::Integer (expected) = expected {
+                if value == expected {
+                    return true;
+                }
+                eprintln!("integer literal not {}, got={}", expected, value);
+                return false;
+            }
+            else {
+                panic!("mismatched type");
+            }
+        },
+        Ast::StringLiteral  { value } => {
+            if let TestType::String (expected) = expected {
+                if *value == expected {
+                    return true;
+                }
+                eprintln!("string literal not {}, got={}", expected, value);
+                return false;
+            }
+            else {
+                panic!("mismatched type");
+            }
+        },
+        Ast::Boolean { value } => {
+            if let TestType::Boolean (expected) = expected {
+                if value == expected {
+                    return true;
+                }
+                eprintln!("boolean literal not {}, got={}", expected, value);
+                return false;
+            }
+            else {
+                panic!("mismatched type");
+            }
+        },
+        _ => panic!("invalid Ast kind: {}", literal.clone().kind()),
+    }
+}
+
 #[test]
 fn test_parse_integer_literal_expression() {
-    let tests = [("5;", 5),
-                 ("10;", 10)
+    let tests = [("5;", TestType::Integer(5)),
+                 ("10;", TestType::Integer(10))
     ];
     
     for test in tests.iter() {
@@ -29,12 +71,7 @@ fn test_parse_integer_literal_expression() {
             assert_eq!(statements.len(), 1);
             for statement in statements.iter() {
                 if let Ast::ExpressionStatement { ref expression } = (**statement).clone() {
-                    if let Ast::Integer { value } = **expression {
-                        assert_eq!(value, test.1);
-                    }
-                    else {
-                        panic!();
-                    }
+                    assert!(test_literal((**expression).clone(), test.1.clone()));
                 }
                 else {
                     panic!();
@@ -49,8 +86,8 @@ fn test_parse_integer_literal_expression() {
 
 #[test]
 fn test_parse_let_statement() {
-    let tests = [("let a = 0;", "a", 0),
-                 ("let foo = 100;", "foo", 100)
+    let tests = [("let a = 0;", "a", TestType::Integer(0)),
+                 ("let foo = 100;", "foo", TestType::Integer(100))
     ];
 
     for test in tests.iter() {
@@ -70,13 +107,7 @@ fn test_parse_let_statement() {
                     else {
                         panic!();
                     }
-                    if let Ast::Integer { value } = **value {
-                        assert_eq!(value, test.2);
-                    }
-                    else{
-                        panic!();
-                    }
-
+                    assert!(test_literal((**value).clone(), test.2.clone()));
                 }
                 else {
                     panic!();
@@ -91,8 +122,8 @@ fn test_parse_let_statement() {
 
 #[test]
 fn test_parse_return_statement() {
-    let tests = [("return 0;", 0),
-                 ("return 10;", 10)
+    let tests = [("return 0;", TestType::Integer(0)),
+                 ("return 10;", TestType::Integer(10))
     ];
 
     for test in tests.iter() {
@@ -106,12 +137,7 @@ fn test_parse_return_statement() {
             assert_eq!(statements.len(), 1);
             for statement in statements.iter() {
                 if let Ast::ReturnStatement { ref return_value } = **statement {
-                    if let Ast::Integer { ref value } = **return_value {
-                        assert_eq!(*value, test.1);
-                    }
-                    else {
-                        panic!();
-                    }
+                    assert!(test_literal((**return_value).clone(), test.1.clone()));
                 }
                 else {
                     panic!();
@@ -126,8 +152,8 @@ fn test_parse_return_statement() {
 
 #[test]
 fn test_parse_boolean_literal() {
-    let tests = [("true;", true),
-                 ("false;", false)
+    let tests = [("true;", TestType::Boolean(true)),
+                 ("false;", TestType::Boolean(false))
     ];
 
     for test in tests.iter() {
@@ -141,12 +167,7 @@ fn test_parse_boolean_literal() {
             assert_eq!(statements.len(), 1);
             for statement in statements.iter() {
                 if let Ast::ExpressionStatement { ref expression } = **statement {
-                    if let Ast::Boolean { ref value } = **expression {
-                        assert_eq!(*value, test.1);
-                    }
-                    else {
-                        panic!();
-                    }
+                    assert!(test_literal((**expression).clone(), test.1.clone()));
                 }
                 else {
                     panic!();
@@ -162,8 +183,8 @@ fn test_parse_boolean_literal() {
 
 #[test]
 fn test_parse_string_literal() {
-    let tests = [("\"foo\";", "foo"),
-                 ("\"bar\";", "bar")
+    let tests = [("\"foo\";", TestType::String("foo".to_string())),
+                 ("\"bar\";", TestType::String("bar".to_string()))
     ];
 
     for test in tests.iter() {
@@ -177,12 +198,7 @@ fn test_parse_string_literal() {
             assert_eq!(statements.len(), 1);
             for statement in statements.iter() {
                 if let Ast::ExpressionStatement { ref expression } = **statement {
-                    if let Ast::StringLiteral { ref value } = **expression {
-                        assert_eq!(**value, test.1.to_string());
-                    }
-                    else {
-                        panic!();
-                    }
+                    assert!(test_literal((**expression).clone(), test.1.clone()));
                 }
                 else {
                     panic!();
@@ -216,23 +232,7 @@ fn test_parse_prefix_expression() {
                 if let Ast::ExpressionStatement { ref expression } = **statement {
                     if let Ast::PrefixExpression { ref operator, ref right } = **expression {
                         assert_eq!(**operator, test.1.to_string());
-                        match test.2.clone() {
-                            TestType::Integer(expected) => {
-                                if let Ast::Integer { ref value } = **right {
-                                    assert_eq!(*value, expected)
-                                }
-                            },
-                            TestType::Boolean(expected) => {
-                                if let Ast::Boolean { ref value } = **right {
-                                    assert_eq!(*value, expected)
-                                }
-                            },
-                            TestType::String(expected)  => {
-                                if let Ast::StringLiteral { ref value } = **right {
-                                    assert_eq!(**value, expected);
-                                }
-                            },
-                        }
+                        assert!(test_literal((**right).clone(), test.2.clone()));
                     }
                     else {
                         panic!();
@@ -272,60 +272,9 @@ fn test_parse_infix_expression() {
             for statement in statements.iter() {
                 if let Ast::ExpressionStatement { ref expression } = **statement {
                     if let Ast::InfixExpression { ref left, ref operator, ref right } = **expression {
-                        match test.1.clone() {
-                            TestType::Integer(expected) => {
-                                if let Ast::Integer { ref value } = **left {
-                                    assert_eq!(*value, expected)
-                                }
-                                else {
-                                    panic!();
-                                }
-                            },
-                            TestType::Boolean(expected) => {
-                                if let Ast::Boolean { ref value } = **left {
-                                    assert_eq!(*value, expected)
-                                }
-                                else {
-                                    panic!();
-                                }
-                            },
-                            TestType::String(expected)  => {
-                                if let Ast::StringLiteral { ref value } = **left {
-                                    assert_eq!(**value, expected);
-                                }
-                                else {
-                                    panic!();
-                                }
-                            },
-                        }
-                    
+                        assert!(test_literal((**left).clone(), test.1.clone()));
                         assert_eq!(**operator, test.2.to_string());
-                        match test.3.clone() {
-                            TestType::Integer(expected) => {
-                                if let Ast::Integer { ref value } = **right {
-                                    assert_eq!(*value, expected)
-                                }
-                                else {
-                                    panic!();
-                                }
-                            },
-                            TestType::Boolean(expected) => {
-                                if let Ast::Boolean { ref value } = **right {
-                                    assert_eq!(*value, expected)
-                                }
-                                else {
-                                    panic!();
-                                }
-                            },
-                            TestType::String(expected)  => {
-                                if let Ast::StringLiteral { ref value } = **right {
-                                    assert_eq!(**value, expected);
-                                }
-                                else {
-                                    panic!();
-                                }
-                            },
-                        }
+                        assert!(test_literal((**right).clone(), test.3.clone()));
                     }
                     else {
                         panic!();
