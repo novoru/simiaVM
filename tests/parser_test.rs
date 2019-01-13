@@ -23,6 +23,8 @@ fn test_parse_integer_literal_expression() {
         let mut parser = Parser::new(lexier);
         let program = parser.parse_program();
 
+        parser.check_parser_errors();
+        
         if let Ast::Program { ref mut statements } = program.unwrap() {
             assert_eq!(statements.len(), 1);
             for statement in statements.iter() {
@@ -55,6 +57,8 @@ fn test_parse_let_statement() {
         let lexier = Lexier::new(test.0.to_string());
         let mut parser = Parser::new(lexier);
         let program = parser.parse_program();
+
+        parser.check_parser_errors();
 
         if let Ast::Program { ref mut statements } = program.unwrap() {
             assert_eq!(statements.len(), 1);
@@ -96,6 +100,8 @@ fn test_parse_return_statement() {
         let mut parser = Parser::new(lexier);
         let program = parser.parse_program();
 
+        parser.check_parser_errors();
+        
         if let Ast::Program { ref mut statements } = program.unwrap() {
             assert_eq!(statements.len(), 1);
             for statement in statements.iter() {
@@ -129,6 +135,8 @@ fn test_parse_boolean_literal() {
         let mut parser = Parser::new(lexier);
         let program = parser.parse_program();
 
+        parser.check_parser_errors();
+        
         if let Ast::Program { ref mut statements } = program.unwrap() {
             assert_eq!(statements.len(), 1);
             for statement in statements.iter() {
@@ -163,6 +171,8 @@ fn test_parse_string_literal() {
         let mut parser = Parser::new(lexier);
         let program = parser.parse_program();
 
+        parser.check_parser_errors();
+        
         if let Ast::Program { ref mut statements } = program.unwrap() {
             assert_eq!(statements.len(), 1);
             for statement in statements.iter() {
@@ -198,6 +208,8 @@ fn test_parse_prefix_expression() {
         let mut parser = Parser::new(lexier);
         let program = parser.parse_program();
 
+        parser.check_parser_errors();
+        
         if let Ast::Program { ref mut statements } = program.unwrap() {
             assert_eq!(statements.len(), 1);
             for statement in statements.iter() {
@@ -218,6 +230,96 @@ fn test_parse_prefix_expression() {
                             TestType::String(expected)  => {
                                 if let Ast::StringLiteral { ref value } = **right {
                                     assert_eq!(**value, expected);
+                                }
+                            },
+                        }
+                    }
+                    else {
+                        panic!();
+                    }
+                }
+                else {
+                    panic!();
+                }
+            }
+        }
+        else {
+            panic!();
+        }
+    }
+}
+
+#[test]
+fn test_parse_infix_expression() {
+    let tests = [("0 + 1;", TestType::Integer(0), "+", TestType::Integer(1)),
+                 ("0 - 1;", TestType::Integer(0), "-", TestType::Integer(1)),
+                 ("0 * 1;", TestType::Integer(0), "*", TestType::Integer(1)),
+                 ("0 / 1;", TestType::Integer(0), "/", TestType::Integer(1))
+    ];
+
+    for test in tests.iter() {
+        let lexier = Lexier::new(test.0.to_string());
+        let mut parser = Parser::new(lexier);
+        let program = parser.parse_program();
+
+        parser.check_parser_errors();
+        
+        if let Ast::Program { ref mut statements } = program.unwrap() {
+            assert_eq!(statements.len(), 1);
+            for statement in statements.iter() {
+                if let Ast::ExpressionStatement { ref expression } = **statement {
+                    if let Ast::InfixExpression { ref left, ref operator, ref right } = **expression {
+                        match test.1.clone() {
+                            TestType::Integer(expected) => {
+                                if let Ast::Integer { ref value } = **left {
+                                    assert_eq!(*value, expected)
+                                }
+                                else {
+                                    panic!();
+                                }
+                            },
+                            TestType::Boolean(expected) => {
+                                if let Ast::Boolean { ref value } = **left {
+                                    assert_eq!(*value, expected)
+                                }
+                                else {
+                                    panic!();
+                                }
+                            },
+                            TestType::String(expected)  => {
+                                if let Ast::StringLiteral { ref value } = **left {
+                                    assert_eq!(**value, expected);
+                                }
+                                else {
+                                    panic!();
+                                }
+                            },
+                        }
+                    
+                        assert_eq!(**operator, test.2.to_string());
+                        match test.3.clone() {
+                            TestType::Integer(expected) => {
+                                if let Ast::Integer { ref value } = **right {
+                                    assert_eq!(*value, expected)
+                                }
+                                else {
+                                    panic!();
+                                }
+                            },
+                            TestType::Boolean(expected) => {
+                                if let Ast::Boolean { ref value } = **right {
+                                    assert_eq!(*value, expected)
+                                }
+                                else {
+                                    panic!();
+                                }
+                            },
+                            TestType::String(expected)  => {
+                                if let Ast::StringLiteral { ref value } = **right {
+                                    assert_eq!(**value, expected);
+                                }
+                                else {
+                                    panic!();
                                 }
                             },
                         }

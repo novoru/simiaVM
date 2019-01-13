@@ -1,3 +1,5 @@
+use simiaVM::repl::{ start };
+
 fn main() {
-    println!("Hello, world!");
+    start();
 }

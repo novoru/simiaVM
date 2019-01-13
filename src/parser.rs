@@ -2,11 +2,21 @@ use crate::ast::{ Ast };
 use crate::lexier::{ Lexier };
 use crate::token::{ Token, TokenKind };
 
+enum Precedence {
+    Lowest,
+    Equals,         // '='
+    LessGreater,    // '<' | '>'
+    Sum,            // '+'
+    Product,        // '*'
+    Prefix,         // '-X' | '!X'
+    Call,           // function(X)
+}
+
 pub struct Parser {
     lexier: Lexier,
     cur_token: Token,
     peek_token: Token,
-    errors: Vec<String>,
+    pub errors: Vec<String>,
 }
 
 impl Parser {
@@ -105,7 +115,6 @@ impl Parser {
         let expression = match self.parse_expression() {
             Some(value) => Box::new(value),
             None        => {
-                self.parse_error();
                 return None;
             },
         };
@@ -131,6 +140,14 @@ impl Parser {
         
         self.next_token();
 
+        let left_exp = match self.cur_token.kind {
+            TokenKind::Plus     |
+            TokenKind::Minus    |
+            TokenKind::Asterisk |
+            TokenKind::Slash    => self.parse_infix_expression(left_exp),
+            _ => left_exp,
+        };
+        
         left_exp
     }
 
@@ -153,6 +170,7 @@ impl Parser {
 
     fn parse_prefix_expression(&mut self) -> Option<Ast> {
         let operator = Box::new(self.cur_token.literal());
+
         self.next_token();
         
         let right = match self.parse_expression() {
@@ -165,7 +183,28 @@ impl Parser {
             right: right,
         })
 
-        
+    }
+
+    fn parse_infix_expression(&mut self, left_exp: Option<Ast>) -> Option<Ast> {
+        let left = match left_exp {
+            Some(value) => Box::new(value),
+            None => return None,
+        };
+
+        let operator = Box::new(self.cur_token.literal());
+
+        self.next_token();
+
+        let right = match self.parse_expression() {
+            Some(value) => Box::new(value),
+            None => return None,
+        };
+
+        Some(Ast::InfixExpression {
+            left: left,
+            operator: operator,
+            right: right,
+        })
     }
     
     fn cur_token_is(&self, kind: TokenKind) -> bool {
@@ -177,17 +216,44 @@ impl Parser {
     }
 
     fn expect_peek(&mut self, kind: TokenKind) -> bool {
-        if self.peek_token_is(kind) {
+        if self.peek_token_is(kind.clone()) {
             self.next_token();
             return true;
         }
 
+        self.peek_error(kind);
+        
         false
+    }
+
+    fn peek_error(&mut self, kind: TokenKind) {
+        let msg = format!("expected next token to be {}, got {} instead",
+                          self.cur_token.kind.literal(), kind.literal());
+        self.errors.push(msg);
     }
     
     fn parse_error(&mut self) {
         let msg = format!("there is no matching pattern for {} found", self.cur_token.clone().literal());
         self.errors.push(msg);
+    }
+
+    fn no_prefix_parse_fn_error(&mut self, kind: TokenKind) {
+        let msg = format!("no prefix parse function for {} found", kind.literal());
+        self.errors.push(msg);
+    }
+    
+    pub fn check_parser_errors(&self) {
+        if self.errors.len() == 0 {
+            return;
+        }
+
+        println!("parser has {} errors", self.errors.len());
+        
+        for msg in self.errors.iter() {
+            println!("parser error: {}", msg);
+        }
+
+        panic!();
     }
     
 }
