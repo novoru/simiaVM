@@ -254,7 +254,10 @@ fn test_parse_infix_expression() {
     let tests = [("0 + 1;", TestType::Integer(0), "+", TestType::Integer(1)),
                  ("0 - 1;", TestType::Integer(0), "-", TestType::Integer(1)),
                  ("0 * 1;", TestType::Integer(0), "*", TestType::Integer(1)),
-                 ("0 / 1;", TestType::Integer(0), "/", TestType::Integer(1))
+                 ("0 / 1;", TestType::Integer(0), "/", TestType::Integer(1)),
+                 ("0 == 1;", TestType::Integer(0), "==", TestType::Integer(1)),
+                 ("0 != 1;", TestType::Integer(0), "!=", TestType::Integer(1))
+
     ];
 
     for test in tests.iter() {

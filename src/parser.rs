@@ -2,6 +2,7 @@ use crate::ast::{ Ast };
 use crate::lexier::{ Lexier };
 use crate::token::{ Token, TokenKind };
 
+#[derive(PartialEq,Clone)]
 enum Precedence {
     Lowest,
     Equals,         // '='
@@ -10,6 +11,24 @@ enum Precedence {
     Product,        // '*'
     Prefix,         // '-X' | '!X'
     Call,           // function(X)
+    Index,          // [X]
+}
+
+fn precedences(kind: TokenKind) -> Precedence {
+    match kind {
+        TokenKind::Eq       |
+        TokenKind::NotEq    => Precedence::Equals,
+        TokenKind::Lt       |
+        TokenKind::Gt       => Precedence::LessGreater,
+        TokenKind::Plus     |
+        TokenKind::Minus    => Precedence::Sum,
+        TokenKind::Slash    |
+        TokenKind::Asterisk => Precedence::Product,
+        TokenKind::Lparen   => Precedence::Call,
+        TokenKind::Lbracket => Precedence::Index,
+        _                   => Precedence::Lowest, 
+        
+    }    
 }
 
 pub struct Parser {
@@ -50,7 +69,9 @@ impl Parser {
             }
             else {
                 self.next_token();
+                continue;
             }
+            self.next_token();
         }
 
         Some(program)
@@ -79,7 +100,7 @@ impl Parser {
 
         self.next_token();
         
-        let value = match self.parse_expression() {
+        let value = match self.parse_expression(Precedence::Lowest) {
             Some(value) => Box::new(value),
             None        => return None,
         };
@@ -97,7 +118,7 @@ impl Parser {
     fn parse_return_statement(&mut self) -> Option<Ast> {
         self.next_token();
 
-        let return_value = match self.parse_expression() {
+        let return_value = match self.parse_expression(Precedence::Lowest) {
             Some(value) => Box::new(value),
             None        => return None,
         };
@@ -112,7 +133,7 @@ impl Parser {
     }
     
     fn parse_expression_statement(&mut self) -> Option<Ast> {
-        let expression = match self.parse_expression() {
+        let expression = match self.parse_expression(Precedence::Lowest) {
             Some(value) => Box::new(value),
             None        => {
                 return None;
@@ -126,27 +147,32 @@ impl Parser {
         Some(Ast::ExpressionStatement { expression: expression })
     }
 
-    fn parse_expression(&mut self) -> Option<Ast> {
+    fn parse_expression(&mut self, precedence: Precedence) -> Option<Ast> {
         // ToDo
-        let left_exp = match self.cur_token.kind {
+        let mut left_exp = match self.cur_token.kind.clone() {
             TokenKind::Integer  => self.parse_integer_literal(),
             TokenKind::True     |
             TokenKind::False    => self.parse_boolean_literal(),
             TokenKind::String   => self.parse_string_literal(),
             TokenKind::Bang     |
             TokenKind::Minus    => self.parse_prefix_expression(),
-            _                   => return None,
+            _                   => {
+                self.no_prefix_parse_fn_error(self.cur_token.kind.clone());
+                return None;
+            },
         };
-        
-        self.next_token();
 
-        let left_exp = match self.cur_token.kind {
-            TokenKind::Plus     |
-            TokenKind::Minus    |
-            TokenKind::Asterisk |
-            TokenKind::Slash    => self.parse_infix_expression(left_exp),
-            _ => left_exp,
-        };
+        while !self.peek_token_is(TokenKind::Semicolon) && (precedence.clone() as u8) < (self.peek_precedence() as u8) {
+            left_exp = match self.peek_token.kind {
+                TokenKind::Plus     |
+                TokenKind::Minus    |
+                TokenKind::Asterisk |
+                TokenKind::Slash    |
+                TokenKind::Eq       |
+                TokenKind::NotEq    => self.parse_infix_expression(left_exp),
+                _ =>  return left_exp,
+            };
+        }
         
         left_exp
     }
@@ -173,7 +199,7 @@ impl Parser {
 
         self.next_token();
         
-        let right = match self.parse_expression() {
+        let right = match self.parse_expression(Precedence::Prefix) {
             Some(value) => Box::new(value),
             None        => return None,
         };
@@ -186,16 +212,19 @@ impl Parser {
     }
 
     fn parse_infix_expression(&mut self, left_exp: Option<Ast>) -> Option<Ast> {
+        self.next_token();
+        
         let left = match left_exp {
             Some(value) => Box::new(value),
             None => return None,
         };
 
         let operator = Box::new(self.cur_token.literal());
-
+        let precedence = self.cur_precedence().clone();
+        
         self.next_token();
 
-        let right = match self.parse_expression() {
+        let right = match self.parse_expression(precedence) {
             Some(value) => Box::new(value),
             None => return None,
         };
@@ -214,7 +243,15 @@ impl Parser {
     fn peek_token_is(&self, kind: TokenKind) -> bool {
         self.peek_token.kind == kind
     }
-
+    
+    fn cur_precedence(&self) -> Precedence {
+        precedences(self.cur_token.kind.clone())
+    }
+    
+    fn peek_precedence(&self) -> Precedence {
+        precedences(self.peek_token.kind.clone())
+    }
+    
     fn expect_peek(&mut self, kind: TokenKind) -> bool {
         if self.peek_token_is(kind.clone()) {
             self.next_token();
