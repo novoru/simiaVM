@@ -61,15 +61,6 @@ fn test_ast_inspect() {
         assert_eq!(return_stmt.inspect(), "return 0;".to_string())
     }
 
-    // Grouped Expression
-    let grouped_expr = Ast::GroupedExpression {
-        expression_list: Box::new(vec![Box::new(ident.clone()), value.clone()]),
-    };
-
-    if let Ast::GroupedExpression { .. } = grouped_expr {
-        assert_eq!(grouped_expr.inspect(), "(foo,0)".to_string())
-    }
-
     // Boolean
     let boolean = Ast::Boolean {
         value: true,
@@ -129,7 +120,7 @@ fn test_ast_inspect() {
     };
     
     if let Ast::PrefixExpression { .. } = pref_expr.clone() {
-        assert_eq!(pref_expr.clone().inspect(), "!true".to_string());
+        assert_eq!(pref_expr.clone().inspect(), "(!true)".to_string());
     }
     
     // Infix Expression
@@ -140,7 +131,7 @@ fn test_ast_inspect() {
     };
 
     if let Ast::InfixExpression { .. } = inf_expr.clone() {
-        assert_eq!(inf_expr.clone().inspect(), "1+2".to_string());
+        assert_eq!(inf_expr.clone().inspect(), "(1 + 2)".to_string());
     }
 
     // Call Expression

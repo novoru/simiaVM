@@ -22,10 +22,6 @@ pub enum Ast {
         value: Box<String>,
     },
 
-    GroupedExpression {
-        expression_list: Box<Vec<Box<Ast>>>,
-    },
-
     IfExpression {
         condition: Box<Ast>,              // BlockStatement
         body: Box<Ast>,                   // BlockStatement
@@ -93,18 +89,6 @@ impl Ast {
             Ast::LetStatement { identifier, value } => string = format!("let {} = {};", (*identifier).inspect(), (*value).inspect()), 
             Ast::ReturnStatement { return_value } => string = format!("return {};", (*return_value).inspect()),
             Ast::Identifier { value } => string = format!("{}", value),
-            Ast::GroupedExpression { expression_list }   => {
-                string = format!("(");
-                for (i, expression) in (*expression_list).iter().enumerate() {
-                    if i == 0 {
-                        string = format!("{}{}", string, (*expression).inspect());
-                    }
-                    else {
-                        string = format!("{},{}", string, (*expression).inspect());
-                    }
-                }
-                string = format!("{})", string);
-            },
             Ast::IfExpression { condition, body, alternative } => {
                 string = format!("if({}){{ {} }}", (*condition).inspect(), (*body).inspect());
                 if let Some(value) = alternative {
@@ -145,8 +129,8 @@ impl Ast {
                 }
                 string = format!("{}]", string);
             },
-            Ast::PrefixExpression { operator, right} => string = format!("{}{}", *operator, (*right).inspect()),
-            Ast::InfixExpression { left, operator, right} => string = format!("{}{}{}", (*left).inspect(), *operator, (*right).inspect()),
+            Ast::PrefixExpression { operator, right} => string = format!("({}{})", *operator, (*right).inspect()),
+            Ast::InfixExpression { left, operator, right} => string = format!("({} {} {})", (*left).inspect(), *operator, (*right).inspect()),
             Ast::CallExpression { function, arguments } => {
                 string = format!("{}(", (*function).inspect());
                 for (i, argument) in arguments.iter().enumerate() {
@@ -175,7 +159,6 @@ impl Ast {
             Ast::LetStatement {..}        => "LetStatement".to_string(),
             Ast::ReturnStatement {..}     => "ReturnStatement".to_string(),
             Ast::Identifier {..}          => "Identifier".to_string(),
-            Ast::GroupedExpression {..}   => "GroupedExpression".to_string(),
             Ast::IfExpression {..}        => "IfExpression".to_string(),
             Ast::BlockStatement {..}      => "BlockStatement".to_string(),
             Ast::FunctionLiteral {..}     => "FunctionLiteral".to_string(),
