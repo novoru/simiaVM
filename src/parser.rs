@@ -159,6 +159,7 @@ impl Parser {
             TokenKind::Lparen     => self.parse_grouped_expression(),
             TokenKind::If         => self.parse_if_expression(),
             TokenKind::Function   => self.parse_function_literal(),
+            TokenKind::Lbrace     => self.parse_block_statement(),
             TokenKind::Lbracket   => self.parse_array_literal(),
             _                     => {
                 self.no_prefix_parse_fn_error(self.cur_token.kind.clone());
@@ -174,6 +175,7 @@ impl Parser {
                 TokenKind::Slash    |
                 TokenKind::Eq       |
                 TokenKind::NotEq    => self.parse_infix_expression(left_exp),
+                TokenKind::Lparen   => self.parse_call_expression(left_exp),
                 _ =>  return left_exp,
             };
         }
@@ -374,19 +376,18 @@ impl Parser {
     }
 
     fn parse_array_literal(&mut self) -> Option<Ast> {
-
-        let elements = match self.parse_expression_list() {
+        let elements = match self.parse_expression_list(TokenKind::Rbracket) {
             Some(value) => Box::new(value),
             None        => return None,
         };
-       
+
         Some(Ast::ArrayLiteral {
             elements: elements,
         })
     }
 
-    fn parse_expression_list(&mut self) -> Option<Vec<Box<Ast>>> {
-        if self.peek_token_is(TokenKind::Rbracket) {
+    fn parse_expression_list(&mut self, end: TokenKind) -> Option<Vec<Box<Ast>>> {
+        if self.peek_token_is(end.clone()) {
             self.next_token();
             return Some(Vec::new());
         }
@@ -410,11 +411,30 @@ impl Parser {
             }
         }
 
-        if !self.expect_peek(TokenKind::Rbracket) {
+        if !self.expect_peek(end.clone()) {
             return Some(Vec::new());
         }
-
+       
         Some(expression_list)
+    }
+
+    fn parse_call_expression(&mut self, function: Option<Ast>) -> Option<Ast> {
+        let function = match function {
+            Some(value) => Box::new(value),
+            None        => return None,
+        };
+
+        self.next_token();
+        
+        let arguments = match self.parse_expression_list(TokenKind::Rparen) {
+            Some(value) => Box::new(value),
+            None        => return None,
+        };
+        
+        Some(Ast::CallExpression {
+            function: function,
+            arguments: arguments,
+        })
     }
     
     fn cur_token_is(&self, kind: TokenKind) -> bool {

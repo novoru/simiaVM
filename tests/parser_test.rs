@@ -339,3 +339,19 @@ fn test_parse_array_literal() {
         assert_eq!(program.unwrap().clone().inspect(), test.to_string());
     }
 }
+
+#[test]
+fn test_parse_call_expression() {
+    let tests = ["add(a,b)"
+    ];
+
+    for test in tests.iter() {
+        let lexier = Lexier::new(test.to_string());
+        let mut parser = Parser::new(lexier);
+        let program = parser.parse_program();
+
+        parser.check_parser_errors();
+
+        assert_eq!(program.unwrap().clone().inspect(), test.to_string());
+    }
+}
