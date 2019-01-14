@@ -290,3 +290,52 @@ fn test_parse_infix_expression() {
         }
     }
 }
+
+#[test]
+fn test_parse_function_expression() {
+    let tests = ["fn(a,b){ return true; }"
+    ];
+
+    for test in tests.iter() {
+        let lexier = Lexier::new(test.to_string());
+        let mut parser = Parser::new(lexier);
+        let program = parser.parse_program();
+
+        parser.check_parser_errors();
+
+        assert_eq!(program.unwrap().clone().inspect(), test.to_string());
+    }
+}
+
+#[test]
+fn test_parse_if_expression() {
+    let tests = ["if(true){ true } else{ false }",
+                 "if(false){ true }"
+    ];
+
+    for test in tests.iter() {
+        let lexier = Lexier::new(test.to_string());
+        let mut parser = Parser::new(lexier);
+        let program = parser.parse_program();
+
+        parser.check_parser_errors();
+
+        assert_eq!(program.unwrap().clone().inspect(), test.to_string());
+    }
+}
+
+#[test]
+fn test_parse_array_literal() {
+    let tests = ["[1,2,3,4]"
+    ];
+
+    for test in tests.iter() {
+        let lexier = Lexier::new(test.to_string());
+        let mut parser = Parser::new(lexier);
+        let program = parser.parse_program();
+
+        parser.check_parser_errors();
+
+        assert_eq!(program.unwrap().clone().inspect(), test.to_string());
+    }
+}
