@@ -355,3 +355,20 @@ fn test_parse_call_expression() {
         assert_eq!(program.unwrap().clone().inspect(), test.to_string());
     }
 }
+
+#[test]
+fn test_parse_index_expression() {
+    let tests = ["[a,b][0]",
+                 "[a,b][(1 + 1)]"
+    ];
+
+    for test in tests.iter() {
+        let lexier = Lexier::new(test.to_string());
+        let mut parser = Parser::new(lexier);
+        let program = parser.parse_program();
+
+        parser.check_parser_errors();
+
+        assert_eq!(program.unwrap().clone().inspect(), test.to_string());
+    }
+}

@@ -159,11 +159,12 @@ fn test_ast_inspect() {
 
     // Index Expression
     let index_expr = Ast::IndexExpression {
+        left: Box::new(array_lit.clone()),
         index: Box::new(Ast::Integer{value:0}),
     };
 
     if let Ast::IndexExpression { .. } = index_expr.clone() {
-        assert_eq!(index_expr.clone().inspect(), "[0]".to_string());
+        assert_eq!(index_expr.clone().inspect(), "[0,bar][0]".to_string());
     }
     
 }

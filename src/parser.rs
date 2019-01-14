@@ -176,6 +176,7 @@ impl Parser {
                 TokenKind::Eq       |
                 TokenKind::NotEq    => self.parse_infix_expression(left_exp),
                 TokenKind::Lparen   => self.parse_call_expression(left_exp),
+                TokenKind::Lbrace   => self.parse_index_expression(left_exp),
                 _ =>  return left_exp,
             };
         }
@@ -434,6 +435,29 @@ impl Parser {
         Some(Ast::CallExpression {
             function: function,
             arguments: arguments,
+        })
+    }
+
+    fn parse_index_expression(&mut self, left: Option<Ast>) -> Option<Ast> {
+        let left = match left {
+            Some(value) => Box::new(value),
+            None        => return None,
+        };
+
+        self.next_token();
+
+        let index = match self.parse_expression(Precedence::Index) {
+            Some(value) => Box::new(value),
+            None        => return None,
+        };
+
+        if !self.expect_peek(TokenKind::Rbrace) {
+            return None;
+        }
+
+        Some(Ast::IndexExpression {
+            left: left,
+            index: index,
         })
     }
     

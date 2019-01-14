@@ -58,6 +58,7 @@ pub enum Ast {
     },
 
     IndexExpression {
+        left: Box<Ast>,
         index: Box<Ast>,
     },
 
@@ -143,7 +144,7 @@ impl Ast {
                 }
                 string = format!("{})", string);
             },
-            Ast::IndexExpression { index }     => string = format!("[{}]", (*index).inspect()),
+            Ast::IndexExpression { left, index }     => string = format!("{}[{}]", (*left).inspect(), (*index).inspect()),
             Ast::Integer { value } => string = format!("{}", value),
             Ast::Boolean { value } => string = format!("{}", value),
             Ast::StringLiteral { value } => string = value.to_string(),
