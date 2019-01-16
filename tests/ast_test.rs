@@ -38,10 +38,6 @@ fn test_ast_inspect() {
         assert_eq!(ident.inspect(), "foo".to_string())
     }
 
-    let value = Box::new(Ast::Integer {
-        value: 0,
-    });
-
     // Expression Statement
     let expr_stmt = Ast::ExpressionStatement {
         expression: Box::new(ident.clone()),
