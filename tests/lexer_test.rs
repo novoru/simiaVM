@@ -1,7 +1,7 @@
 extern crate simiaVM;
 
 use simiaVM::token::{ Token, TokenKind };
-use simiaVM::lexier::{ Lexier };
+use simiaVM::lexer::{ Lexer };
 
 #[test]
 fn test_next_token() {
@@ -20,7 +20,7 @@ fn(a) {               \
 }                     \
 [1, 2, a];            \
 ".to_string();
-    let mut lexier = Lexier::new(input);
+    let mut lexer = Lexer::new(input);
 
     let tests = [ Token { kind: TokenKind::Assign, literal: "=".to_string() },
                   Token { kind: TokenKind::Plus, literal: "+".to_string() },
@@ -101,7 +101,7 @@ fn(a) {               \
     ];
 
     for test in tests.iter() {
-        let token = lexier.next_token();
+        let token = lexer.next_token();
         assert!(token.kind == test.kind);
         assert_eq!(token.literal, test.literal);
     }

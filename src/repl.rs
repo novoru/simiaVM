@@ -1,4 +1,4 @@
-use crate::lexier::Lexier;
+use crate::lexer::Lexer;
 use crate::parser:: { Parser };
 use std::io::{ self, Write, stdin };
 
@@ -11,8 +11,8 @@ pub fn start() {
         
         match stdin().read_line(&mut input) {
             Ok(_) => {
-                let lexier = Lexier::new(input);
-                let mut parser = Parser::new(lexier);
+                let lexer = Lexer::new(input);
+                let mut parser = Parser::new(lexer);
                 let program = parser.parse_program().unwrap();
 
                 if parser.errors.len() != 0 {

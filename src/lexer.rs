@@ -1,23 +1,23 @@
 use crate::token::{ Token, TokenKind };
 
-pub struct Lexier {
+pub struct Lexer {
     input: String,
     position: usize,
     read_position: usize,
     ch: char,
 }
 
-impl Lexier {
-    pub fn new(input: String) -> Lexier {
-        let mut lexier = Lexier {
+impl Lexer {
+    pub fn new(input: String) -> Lexer {
+        let mut lexer = Lexer {
             input: input,
             position: 0,
             read_position: 0,
             ch: '\0',
         };
 
-        lexier.read_char();
-        lexier
+        lexer.read_char();
+        lexer
     }
     
     pub fn next_token(&mut self) -> Token {

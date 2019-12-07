@@ -1,7 +1,7 @@
 extern crate simiaVM;
 
 use simiaVM::ast::{ Ast };
-use simiaVM::lexier::{ Lexier };
+use simiaVM::lexer::{ Lexer };
 use simiaVM::parser::{ Parser };
 use simiaVM::token::{ Token, TokenKind };
 
@@ -61,8 +61,8 @@ fn test_parse_integer_literal_expression() {
     ];
     
     for test in tests.iter() {
-        let lexier = Lexier::new(test.0.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.0.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -91,8 +91,8 @@ fn test_parse_let_statement() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.0.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.0.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -127,8 +127,8 @@ fn test_parse_return_statement() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.0.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.0.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -157,8 +157,8 @@ fn test_parse_boolean_literal() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.0.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.0.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -188,8 +188,8 @@ fn test_parse_string_literal() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.0.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.0.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -220,8 +220,8 @@ fn test_parse_prefix_expression() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.0.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.0.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -261,8 +261,8 @@ fn test_parse_infix_expression() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.0.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.0.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -297,8 +297,8 @@ fn test_parse_function_expression() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -314,8 +314,8 @@ fn test_parse_if_expression() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -330,8 +330,8 @@ fn test_parse_array_literal() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -346,8 +346,8 @@ fn test_parse_call_expression() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();
@@ -363,8 +363,8 @@ fn test_parse_index_expression() {
     ];
 
     for test in tests.iter() {
-        let lexier = Lexier::new(test.to_string());
-        let mut parser = Parser::new(lexier);
+        let lexer = Lexer::new(test.to_string());
+        let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
 
         parser.check_parser_errors();

@@ -1,5 +1,5 @@
 use crate::ast::{ Ast };
-use crate::lexier::{ Lexier };
+use crate::lexer::{ Lexer };
 use crate::token::{ Token, TokenKind };
 
 #[derive(PartialEq,Clone)]
@@ -32,16 +32,16 @@ fn precedences(kind: TokenKind) -> Precedence {
 }
 
 pub struct Parser {
-    lexier: Lexier,
+    lexer: Lexer,
     cur_token: Token,
     peek_token: Token,
     pub errors: Vec<String>,
 }
 
 impl Parser {
-    pub fn new(lexier: Lexier) -> Parser {
+    pub fn new(lexer: Lexer) -> Parser {
         let mut parser = Parser {
-            lexier: lexier,
+            lexer: lexer,
             cur_token:  Token { kind: TokenKind::Illegal, literal: "".to_string() },
             peek_token: Token { kind: TokenKind::Illegal, literal: "".to_string() },
             errors: Vec::new(),
@@ -55,7 +55,7 @@ impl Parser {
 
     fn next_token(&mut self) {
         self.cur_token = self.peek_token.clone();
-        self.peek_token = self.lexier.next_token();
+        self.peek_token = self.lexer.next_token();
     }
     
     pub fn parse_program(&mut self) -> Option<Ast> {
