@@ -53,3 +53,20 @@ fn test_eval_boolean_expression() {
         test_boolean_object(evaluated, test.1);
     }
 }
+
+#[test]
+fn test_bang_operator() {
+    let tests = [
+                    ("!true", false),
+                    ("!false", true),
+                    ("!5", false),
+                    ("!!true", true),
+                    ("!!false", false),
+                    ("!!5", true),
+    ];
+
+    for test in &tests {
+        let evaluated = test_eval(test.0.to_string());
+        test_boolean_object(evaluated, test.1);
+    }
+}
