@@ -3,7 +3,6 @@ extern crate simiaVM;
 use simiaVM::ast::{ Ast };
 use simiaVM::lexer::{ Lexer };
 use simiaVM::parser::{ Parser };
-use simiaVM::token::{ Token, TokenKind };
 
 #[derive(Clone)]
 enum TestType {
