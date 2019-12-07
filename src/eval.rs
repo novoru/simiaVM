@@ -70,10 +70,14 @@ pub fn eval_infix_expression(operator: String, left: Object, right: Object) -> O
 
 pub fn eval_integer_infix_expression(operator: String, lvalue: i64, rvalue: i64) -> Object {
     match operator.as_ref() {
-        "+" => Object::Integer { value: lvalue + rvalue },
-        "-" => Object::Integer { value: lvalue - rvalue },
-        "*" => Object::Integer { value: lvalue * rvalue },
-        "/" => Object::Integer { value: lvalue / rvalue },
-        _   => Object::Null,
+        "+"     => Object::Integer { value: lvalue + rvalue },
+        "-"     => Object::Integer { value: lvalue - rvalue },
+        "*"     => Object::Integer { value: lvalue * rvalue },
+        "/"     => Object::Integer { value: lvalue / rvalue },
+        "<"     => Object::Boolean { value: lvalue < rvalue },
+        ">"     => Object::Boolean { value: lvalue > rvalue },
+        "=="    => Object::Boolean { value: lvalue == rvalue },
+        "!="    => Object::Boolean { value: lvalue != rvalue },
+        _       => Object::Null,
     }
 }
