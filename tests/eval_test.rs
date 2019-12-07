@@ -32,6 +32,8 @@ fn test_eval_integer_expression() {
     let tests = [  
                     ("5", 5 ),
                     ("10", 10 ),
+                    ("-5", -5),
+                    ("-10", -10),
     ];
 
     for test in &tests {

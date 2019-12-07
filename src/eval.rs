@@ -28,6 +28,7 @@ pub fn eval_statements(statements: Vec<Box<Ast>>) -> Option<Object> {
 pub fn eval_prefix_expression(operator: String, right: Object) -> Option<Object> {
     match operator.as_ref() {
         "!" => Some(eval_bang_operator_expression(right)),
+        "-" => Some(eval_minus_prefix_operator_expression(right)),
         _   => None,
     }
 }
@@ -42,5 +43,12 @@ pub fn eval_bang_operator_expression(right: Object) -> Object {
         },
         Object::Null    => Object::Boolean { value: true },
         _               => Object::Boolean { value: false },
+    }
+}
+
+pub fn eval_minus_prefix_operator_expression(right: Object) -> Object {
+    match right {
+        Object::Integer { value }   => Object::Integer { value: -value },
+        _                           => Object::Null,
     }
 }
