@@ -11,6 +11,11 @@ pub fn eval(node: Ast) -> Object {
             let _right = eval(*right);
             return eval_prefix_expression(*operator, _right).unwrap();
         },
+        Ast::InfixExpression { left, operator, right } => {
+            let _left = eval(*left);
+            let _right = eval(*right);
+            return eval_infix_expression(*operator, _left, _right);
+        },
         _                                       => Object::Null,
     }
 }
@@ -50,5 +55,25 @@ pub fn eval_minus_prefix_operator_expression(right: Object) -> Object {
     match right {
         Object::Integer { value }   => Object::Integer { value: -value },
         _                           => Object::Null,
+    }
+}
+
+pub fn eval_infix_expression(operator: String, left: Object, right: Object) -> Object {
+    if let Object::Integer { value: lvalue } = left {
+        if let Object::Integer { value: rvalue } = right {
+            return eval_integer_infix_expression(operator, lvalue, rvalue)
+        }
+    }
+
+    return Object::Null;
+}
+
+pub fn eval_integer_infix_expression(operator: String, lvalue: i64, rvalue: i64) -> Object {
+    match operator.as_ref() {
+        "+" => Object::Integer { value: lvalue + rvalue },
+        "-" => Object::Integer { value: lvalue - rvalue },
+        "*" => Object::Integer { value: lvalue * rvalue },
+        "/" => Object::Integer { value: lvalue / rvalue },
+        _   => Object::Null,
     }
 }
