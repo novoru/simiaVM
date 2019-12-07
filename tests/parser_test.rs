@@ -254,6 +254,8 @@ fn test_parse_infix_expression() {
                  ("0 - 1;", TestType::Integer(0), "-", TestType::Integer(1)),
                  ("0 * 1;", TestType::Integer(0), "*", TestType::Integer(1)),
                  ("0 / 1;", TestType::Integer(0), "/", TestType::Integer(1)),
+                 ("0 < 1;", TestType::Integer(0), "<", TestType::Integer(1)),
+                 ("0 > 1;", TestType::Integer(0), ">", TestType::Integer(1)),
                  ("0 == 1;", TestType::Integer(0), "==", TestType::Integer(1)),
                  ("0 != 1;", TestType::Integer(0), "!=", TestType::Integer(1))
 

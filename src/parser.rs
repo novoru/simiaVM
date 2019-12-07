@@ -174,6 +174,8 @@ impl Parser {
                 TokenKind::Asterisk |
                 TokenKind::Slash    |
                 TokenKind::Eq       |
+                TokenKind::Lt       |
+                TokenKind::Gt       |
                 TokenKind::NotEq    => self.parse_infix_expression(left_exp),
                 TokenKind::Lparen   => self.parse_call_expression(left_exp),
                 TokenKind::Lbrace   => self.parse_index_expression(left_exp),
