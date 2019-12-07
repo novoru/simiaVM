@@ -3,11 +3,11 @@ use crate::object::{ Object };
 
 pub fn eval(node: Ast) -> Object {
     match node {
-        Ast::Program { statements }             => eval_statements(*statements).unwrap(),
-        Ast::ExpressionStatement { expression } => eval(*expression),
-        Ast::Integer { value }                  => Object::Integer { value: value },
-        Ast::Boolean { value }                  => Object::Boolean { value: value },
-        Ast::PrefixExpression { operator, right} => {
+        Ast::Program { statements }                 => eval_statements(*statements).unwrap(),
+        Ast::ExpressionStatement { expression }     => eval(*expression),
+        Ast::Integer { value }                      => Object::Integer { value: value },
+        Ast::Boolean { value }                      => Object::Boolean { value: value },
+        Ast::PrefixExpression { operator, right}    => {
             let _right = eval(*right);
             return eval_prefix_expression(*operator, _right).unwrap();
         },
@@ -16,7 +16,7 @@ pub fn eval(node: Ast) -> Object {
             let _right = eval(*right);
             return eval_infix_expression(*operator, _left, _right);
         },
-        _                                       => Object::Null,
+        _   => Object::Null,
     }
 }
 
@@ -65,25 +65,13 @@ pub fn eval_infix_expression(operator: String, left: Object, right: Object) -> O
         }
     }
 
-    match operator.as_ref() {
-        "==" => {
-            if let Object::Boolean { value: lvalue } = left {
-                if let Object::Boolean { value: rvalue } = right {
-                    return Object::Boolean { value: lvalue == rvalue };
-                }
-            }
-            return Object::Null;
-        },
-        "!=" => {
-            if let Object::Boolean { value: lvalue } = left {
-                if let Object::Boolean { value: rvalue } = right {
-                    return Object::Boolean { value: lvalue != rvalue };
-                }
-            }
-            return Object::Null;
-        },
-        _       => Object::Null,
+    if let Object::Boolean { value: lvalue } = left {
+        if let Object::Boolean { value: rvalue } = right {
+            return eval_boolean_infix_expression(operator, lvalue, rvalue)
+        }
     }
+
+    Object::Null
 }
 
 pub fn eval_integer_infix_expression(operator: String, lvalue: i64, rvalue: i64) -> Object {
@@ -94,6 +82,14 @@ pub fn eval_integer_infix_expression(operator: String, lvalue: i64, rvalue: i64)
         "/"     => Object::Integer { value: lvalue / rvalue },
         "<"     => Object::Boolean { value: lvalue < rvalue },
         ">"     => Object::Boolean { value: lvalue > rvalue },
+        "=="    => Object::Boolean { value: lvalue == rvalue },
+        "!="    => Object::Boolean { value: lvalue != rvalue },
+        _       => Object::Null,
+    }
+}
+
+pub fn eval_boolean_infix_expression(operator: String, lvalue: bool, rvalue: bool) -> Object {
+    match operator.as_ref() {
         "=="    => Object::Boolean { value: lvalue == rvalue },
         "!="    => Object::Boolean { value: lvalue != rvalue },
         _       => Object::Null,
