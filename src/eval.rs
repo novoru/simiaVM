@@ -65,7 +65,25 @@ pub fn eval_infix_expression(operator: String, left: Object, right: Object) -> O
         }
     }
 
-    return Object::Null;
+    match operator.as_ref() {
+        "==" => {
+            if let Object::Boolean { value: lvalue } = left {
+                if let Object::Boolean { value: rvalue } = right {
+                    return Object::Boolean { value: lvalue == rvalue };
+                }
+            }
+            return Object::Null;
+        },
+        "!=" => {
+            if let Object::Boolean { value: lvalue } = left {
+                if let Object::Boolean { value: rvalue } = right {
+                    return Object::Boolean { value: lvalue != rvalue };
+                }
+            }
+            return Object::Null;
+        },
+        _       => Object::Null,
+    }
 }
 
 pub fn eval_integer_infix_expression(operator: String, lvalue: i64, rvalue: i64) -> Object {
