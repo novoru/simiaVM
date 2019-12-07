@@ -5,8 +5,9 @@ pub fn eval(node: Ast) -> Object {
     match node {
         Ast::Program { statements }             => eval_statements(*statements).unwrap(),
         Ast::ExpressionStatement { expression } => eval(*expression),
-        Ast::Integer { value }                  => Object::Integer{ value: value },
-        _ => Object::Null,
+        Ast::Integer { value }                  => Object::Integer { value: value },
+        Ast::Boolean { value }                  => Object::Boolean { value: value },
+        _                                       => Object::Null,
     }
 }
 

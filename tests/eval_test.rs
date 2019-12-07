@@ -20,16 +20,36 @@ fn test_integer_object(o: Object, expected: i64) {
     }
 }
 
+fn test_boolean_object(o: Object, expected: bool) {
+    match o {
+        Object::Boolean { value }   => assert_eq!(value, expected),
+        _                           => panic!("object is not Boolean. got={}",o.kind()),
+    }
+}
+
 #[test]
 fn test_eval_integer_expression() {
     let tests = [  
                     ("5", 5 ),
                     ("10", 10 ),
-                ];
+    ];
 
     for test in &tests {
         let evaluated = test_eval(test.0.to_string());
         test_integer_object(evaluated, test.1);
     }
                 
+}
+
+#[test]
+fn test_eval_boolean_expression() {
+    let tests = [
+                    ("true", true),
+                    ("false", false),
+    ];
+
+    for test in &tests {
+        let evaluated = test_eval(test.0.to_string());
+        test_boolean_object(evaluated, test.1);
+    }
 }
